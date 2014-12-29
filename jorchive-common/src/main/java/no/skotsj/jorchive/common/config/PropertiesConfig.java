@@ -1,0 +1,39 @@
+package no.skotsj.jorchive.common.config;
+
+import no.skotsj.jorchive.common.prop.DirectorySettings;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.ClassPathResource;
+
+/**
+ * Properties
+ *
+ * Created by Skotsj on 28.12.2014.
+ */
+@Configuration
+@EnableConfigurationProperties
+public class PropertiesConfig {
+
+    @Bean
+    public DirectorySettings directorySettings() {
+        return new DirectorySettings();
+    }
+
+    @Bean
+    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
+        configurer.setProperties(yamlPropertiesFactoryBean().getObject());
+        return configurer;
+    }
+
+    @Bean
+    public YamlPropertiesFactoryBean yamlPropertiesFactoryBean() {
+        YamlPropertiesFactoryBean bean = new YamlPropertiesFactoryBean();
+        bean.setResources(new ClassPathResource("config/application.yml"));
+        return bean;
+    }
+
+}

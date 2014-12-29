@@ -1,0 +1,40 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="Layout">
+<head>
+    <title>Home</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-header">
+        <h1>Files</h1>
+    </div>
+    <!--@thymesVar id="completed" type="no.skotsj.jorchive.web.model.FileList"-->
+    <table class="table table-condensed table-hover" th:object="${completed}">
+        <tr>
+            <th>-></th>
+            <th>File</th>
+            <th>Size</th>
+        </tr>
+        <tr th:each="row,rowStat : *{files}"
+            class="fileRow"
+            th:id="${row.ownHash}"
+            th:classappend="${row.hash}"
+            th:style="${'background-color:' + row.color + ';'}"
+            th:styleappend="${row.depth gt 0}? 'display:none'"
+            th:data="${row.relativePath}"
+            th:attr="data-depth=${row.depth}">
+
+            <td th:text="${row.children ne 0}?${row.children}">0</td>
+            <td th:utext="${row.name}">name</td>
+            <td th:utext="${row.size}">125MB</td>
+        </tr>
+    </table>
+</section>
+<footer>
+    <p layout:fragment="custom-footer">This is some footer content from content page 1</p>
+</footer>
+</body>
+</html>
