@@ -10,27 +10,31 @@ import org.springframework.core.io.ClassPathResource;
 
 /**
  * Properties
- *
+ * <p>
  * Created by Skotsj on 28.12.2014.
  */
 @Configuration
 @EnableConfigurationProperties
-public class PropertiesConfig {
+public class PropertiesConfig
+{
 
     @Bean
-    public DirectorySettings directorySettings() {
+    public DirectorySettings directorySettings()
+    {
         return new DirectorySettings();
     }
 
     @Bean
-    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer()
+    {
         PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
         configurer.setProperties(yamlPropertiesFactoryBean().getObject());
         return configurer;
     }
 
     @Bean
-    public YamlPropertiesFactoryBean yamlPropertiesFactoryBean() {
+    public YamlPropertiesFactoryBean yamlPropertiesFactoryBean()
+    {
         YamlPropertiesFactoryBean bean = new YamlPropertiesFactoryBean();
         bean.setResources(new ClassPathResource("config/application.yml"));
         return bean;

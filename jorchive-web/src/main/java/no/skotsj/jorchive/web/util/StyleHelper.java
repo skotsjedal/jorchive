@@ -7,7 +7,8 @@ import java.nio.file.Path;
 /**
  * @author Skotsj on 29.12.2014.
  */
-public class StyleHelper {
+public class StyleHelper
+{
 
     public static final String WHITE = "#000000";
     public static final String DARK_GREEN = "#4C9900";
@@ -25,13 +26,15 @@ public class StyleHelper {
     public static final String BOOK = "glyphicon-book";
     public static final String PICTURE = "glyphicon-picture";
 
-    public static String fileSizeWithHtmlColor(long dataSize) {
+    public static String fileSizeWithHtmlColor(long dataSize)
+    {
         String displaySize = humanReadableByteCount(dataSize);
         displaySize = "<span style='color:" + getColor(dataSize) + "'>" + displaySize + "</span>";
         return displaySize;
     }
 
-    private static String humanReadableByteCount(long bytes) {
+    private static String humanReadableByteCount(long bytes)
+    {
         final int unit = 1024;
         if (bytes < unit) return bytes + " B";
         int exp = (int) (Math.log(bytes) / Math.log(unit));
@@ -39,47 +42,61 @@ public class StyleHelper {
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
 
-    private static String getColor(long dataSize) {
+    private static String getColor(long dataSize)
+    {
         dataSize /= 1024 * 1024;
 
-        if (dataSize == 0) {
+        if (dataSize == 0)
+        {
             return WHITE;
         }
-        if (dataSize <= 45) {
+        if (dataSize <= 45)
+        {
             return DARK_GREEN;
         }
-        if (dataSize <= 95) {
+        if (dataSize <= 95)
+        {
             return ORANGE;
         }
-        if (dataSize <= 495) {
+        if (dataSize <= 495)
+        {
             return DARK_ORANGE;
         }
-        if (dataSize <= 950) {
+        if (dataSize <= 950)
+        {
             return BRIGHT_RED;
         }
-        if (dataSize <= 1950) {
+        if (dataSize <= 1950)
+        {
             return RED;
         }
         return DARK_RED;
     }
 
-    public static String fileSizeWithHtmlColor(Path path) {
-        if (Files.isDirectory(path)) {
+    public static String fileSizeWithHtmlColor(Path path)
+    {
+        if (Files.isDirectory(path))
+        {
             return "";
         }
-        try {
+        try
+        {
             return fileSizeWithHtmlColor(Files.size(path));
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             throw new RuntimeException(e);
         }
     }
 
-    public static String icon(String iconName) {
+    public static String icon(String iconName)
+    {
         return "<span class='glyphicon " + iconName + "'></span>&nbsp;&nbsp;";
     }
 
-    public static String addIcon(String ext, String name) {
-        switch (ext) {
+    public static String addIcon(String ext, String name)
+    {
+        switch (ext)
+        {
             case "mkv":
             case "avi":
             case "mp4":

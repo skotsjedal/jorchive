@@ -1,7 +1,6 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Layout page</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"/>
@@ -79,6 +78,19 @@
             subItems.removeClass(rows);
             subItems.removeClass(children);
         }
+    });
+
+    $('.filterBtn').click(function() {
+        var btn = $(this);
+        var type = btn.attr('data');
+        $.ajax('/filter/' + type)
+                .done(function (data) {
+                    // TODO ajax this
+                    location.reload();
+                })
+                .fail(function () {
+                    btn.addClass('btn-danger');
+                });
     });
 </script>
 </body>

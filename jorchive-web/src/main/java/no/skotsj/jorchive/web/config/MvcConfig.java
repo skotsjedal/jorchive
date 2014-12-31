@@ -22,17 +22,20 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 @EnableWebMvc
 @Configuration
 @ComponentScan(basePackages = {"no.skotsj.jorchive.web.controller"})
-public class MvcConfig extends WebMvcConfigurerAdapter {
+public class MvcConfig extends WebMvcConfigurerAdapter
+{
 
     @Bean
-    public ThymeleafViewResolver viewResolver() {
+    public ThymeleafViewResolver viewResolver()
+    {
         ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
         viewResolver.setTemplateEngine(templateEngine());
         return viewResolver;
     }
 
     @Bean
-    public SpringTemplateEngine templateEngine() {
+    public SpringTemplateEngine templateEngine()
+    {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(templateResolver());
         templateEngine.addDialect(layoutDialect());
@@ -40,7 +43,8 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public ServletContextTemplateResolver templateResolver() {
+    public ServletContextTemplateResolver templateResolver()
+    {
         ServletContextTemplateResolver resolver = new ServletContextTemplateResolver();
         resolver.setPrefix("/WEB-INF/views/");
         resolver.setSuffix(".html");
@@ -50,27 +54,32 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public LayoutDialect layoutDialect() {
+    public LayoutDialect layoutDialect()
+    {
         return new LayoutDialect();
     }
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(ResourceHandlerRegistry registry)
+    {
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
     }
 
     @Override
-    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer)
+    {
         configurer.enable();
     }
 
     @Bean
-    public CommonsMultipartResolver multipartResolver() {
+    public CommonsMultipartResolver multipartResolver()
+    {
         return new CommonsMultipartResolver();
     }
 
     @Bean
-    public ReloadableResourceBundleMessageSource messageSource() {
+    public ReloadableResourceBundleMessageSource messageSource()
+    {
         ReloadableResourceBundleMessageSource resource = new ReloadableResourceBundleMessageSource();
         resource.setBasename("classpath:messages");
         resource.setDefaultEncoding("UTF-8");

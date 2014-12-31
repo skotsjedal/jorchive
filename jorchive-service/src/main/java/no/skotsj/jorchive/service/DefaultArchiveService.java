@@ -11,16 +11,19 @@ import java.util.List;
 
 /**
  * Service Class For Archiving
+ *
  * @author Skotsj on 28.12.2014.
  */
 @Service
-public class DefaultArchiveService implements ArchiveService {
+public class DefaultArchiveService implements ArchiveService
+{
 
     @Autowired
     private DirectorySettings directorySettings;
 
     @Override
-    public List<Path> listCompleted(){
+    public List<Path> listCompleted()
+    {
         Path dir = Paths.get(directorySettings.getCompleted());
         return FileUtils.listDir(dir);
     }

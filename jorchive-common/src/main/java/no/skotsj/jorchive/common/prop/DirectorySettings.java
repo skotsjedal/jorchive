@@ -10,24 +10,29 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConfigurationProperties(prefix = "jorchive.dir", ignoreUnknownFields = false)
-public class DirectorySettings {
+public class DirectorySettings
+{
 
     private String completed;
     private String temp;
 
-    public String getCompleted() {
+    public String getCompleted()
+    {
         return completed;
     }
 
-    public void setCompleted(String completed) {
+    public void setCompleted(String completed)
+    {
         this.completed = completed;
     }
 
-    public String getTemp() {
+    public String getTemp()
+    {
         return temp;
     }
 
-    public void setTemp(String temp) {
+    public void setTemp(String temp)
+    {
         this.temp = temp;
     }
 }

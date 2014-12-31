@@ -12,5 +12,6 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @ComponentScan("no.skotsj.jorchive.service")
 @Import(PropertiesConfig.class)
-public class ServiceConfig {
+public class ServiceConfig
+{
 }

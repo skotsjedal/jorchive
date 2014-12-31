@@ -7,10 +7,11 @@ import java.util.List;
 
 /**
  * ArchiveService
- *
+ * <p>
  * Created by Skotsj on 28.12.2014.
  */
 @Service
-public interface ArchiveService {
+public interface ArchiveService
+{
     List<Path> listCompleted();
 }
