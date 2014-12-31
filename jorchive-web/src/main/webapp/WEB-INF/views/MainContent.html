@@ -11,8 +11,8 @@
     <div class="page-header">
         <h1>Files</h1>
     </div>
-    <!--@thymesVar id="completed" type="no.skotsj.jorchive.web.model.FileList"-->
-    <table class="table table-condensed table-hover" th:object="${completed}">
+    <!--@thymesVar id="fileList" type="no.skotsj.jorchive.web.model.FileList"-->
+    <table class="table table-condensed table-hover" th:object="${fileList}">
         <tr>
             <th>-></th>
             <th>File</th>
@@ -20,21 +20,21 @@
         </tr>
         <tr th:each="row,rowStat : *{files}"
             class="fileRow"
-            th:id="${row.ownHash}"
-            th:classappend="${row.hash}"
+            th:id="${row.id}"
+            th:classappend="${row.context} + ' ' + ${row.depth gt 0 ? 'collapsedRow' : 'collapsedChildren'}"
             th:style="${'background-color:' + row.color + ';'}"
-            th:styleappend="${row.depth gt 0}? 'display:none'"
             th:data="${row.relativePath}"
-            th:attr="data-depth=${row.depth}">
+            th:attr="data-depth=${row.depth}"
+            th:remove="${row.ignored}? 'all'">
 
-            <td th:text="${row.children ne 0}?${row.children}">0</td>
+            <td class="lcol" th:text="${row.children ne 0}?${row.children}">0</td>
             <td th:utext="${row.name}">name</td>
-            <td th:utext="${row.size}">125MB</td>
+            <td class="rcol" th:utext="${row.size}">125MB</td>
         </tr>
     </table>
 </section>
 <footer>
-    <p layout:fragment="custom-footer">This is some footer content from content page 1</p>
+    <p layout:fragment="custom-footer">footer 1</p>
 </footer>
 </body>
 </html>

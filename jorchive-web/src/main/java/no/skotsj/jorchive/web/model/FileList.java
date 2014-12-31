@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static no.skotsj.jorchive.web.util.StyleHelper.*;
@@ -25,6 +26,8 @@ import static no.skotsj.jorchive.web.util.StyleHelper.*;
  * @author Skotsj on 29.12.2014.
  */
 public class FileList {
+
+    public static final String IGNORED_ARCHIVE_PATTERN = "r\\d\\d";
 
     private Path root;
     private List<FileInfo> files = Lists.newArrayList();
@@ -45,7 +48,7 @@ public class FileList {
             subDirs.forEach(p -> parse(p, depth + 1));
         } else {
             String ext = StringUtils.substringAfterLast(path.toString(), ".");
-            if (ext.matches("r\\d\\d")) {
+            if (ext.matches(IGNORED_ARCHIVE_PATTERN)) {
                 return;
             }
             FileInfo newFile = new FileInfo(path, depth, 0);
@@ -75,15 +78,18 @@ public class FileList {
 
     private class FileInfo {
 
+        public static final String RAR_SEPARATOR = "//";
+
         private int depth;
         private int children;
         private String name;
         private String size;
-        private String hash;
-        private String ownHash;
+        private String context;
+        private String id;
 
         private String relativePath;
         private boolean isDir = false;
+        private boolean ignored = false;
 
         public FileInfo(final Path path, final int depth, int children) {
             String fullPath = path.toAbsolutePath().toString();
@@ -98,7 +104,7 @@ public class FileList {
         }
 
         public FileInfo(FileHeader fileHeader, String rarFile, int depth) {
-            this.relativePath = rarFile + "§" + fileHeader.getFileNameString();
+            this.relativePath = rarFile + RAR_SEPARATOR + fileHeader.getFileNameString();
             this.name = fileHeader.getFileNameString();
             this.depth = depth;
             this.children = 0;
@@ -108,13 +114,13 @@ public class FileList {
 
         private void generateHashes() {
             LinkedList<String> hashes = createHash();
-            this.ownHash = hashes.pollLast();
-            this.hash = Joiner.on(" ").join(hashes);
+            this.id = hashes.pollLast();
+            this.context = Joiner.on(" ").join(hashes);
         }
 
         private LinkedList<String> createHash() {
             final StringBuilder pathBuilder = new StringBuilder();
-            List<String> hashes = Splitter.on(File.separator)
+            List<String> hashes = Splitter.on(Pattern.compile("[" + RAR_SEPARATOR + Pattern.quote(File.separator) + "]"))
                     .splitToList(relativePath).stream()
                     .map(s -> {
                         pathBuilder.append(s);
@@ -129,12 +135,12 @@ public class FileList {
             return depth;
         }
 
-        public String getOwnHash() {
-            return ownHash;
+        public String getId() {
+            return id;
         }
 
-        public String getHash() {
-            return hash;
+        public String getContext() {
+            return context;
         }
 
         public String getName() {
@@ -142,14 +148,6 @@ public class FileList {
                 return (isDir ? icon(FOLDER_OPEN) : "") + name;
             }
             return Strings.repeat("&nbsp;", depth * 4) + "\\- " + iconify(name);
-        }
-
-        private String iconify(String name) {
-            if (isDir) {
-                return icon(FOLDER_OPEN) + name;
-            }
-            String ext = StringUtils.substringAfterLast(name, ".");
-            return addIcon(ext, name);
         }
 
         public String getSize() {
@@ -168,8 +166,16 @@ public class FileList {
             return "#" + Strings.repeat(Integer.toHexString(255 - depth * 20), 3);
         }
 
-        public void setSize(String size) {
-            this.size = size;
+        public boolean isIgnored() {
+            return ignored;
+        }
+
+        private String iconify(String name) {
+            if (isDir) {
+                return icon(FOLDER_OPEN) + name;
+            }
+            String ext = StringUtils.substringAfterLast(name, ".");
+            return addIcon(ext, name);
         }
     }
 }
