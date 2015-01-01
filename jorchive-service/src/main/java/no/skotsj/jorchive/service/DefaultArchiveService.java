@@ -28,4 +28,10 @@ public class DefaultArchiveService implements ArchiveService
         return FileUtils.listDir(dir);
     }
 
+    @Override
+    public Path getOutPath()
+    {
+        return Paths.get(directorySettings.getOutput());
+    }
+
 }

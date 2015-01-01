@@ -15,6 +15,7 @@ public class DirectorySettings
 
     private String completed;
     private String temp;
+    private String output;
 
     public String getCompleted()
     {
@@ -34,5 +35,15 @@ public class DirectorySettings
     public void setTemp(String temp)
     {
         this.temp = temp;
+    }
+
+    public String getOutput()
+    {
+        return output;
+    }
+
+    public void setOutput(String output)
+    {
+        this.output = output;
     }
 }

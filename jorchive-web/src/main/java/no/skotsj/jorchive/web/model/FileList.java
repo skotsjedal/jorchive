@@ -10,6 +10,7 @@ import no.skotsj.jorchive.common.util.FileUtils;
 import no.skotsj.jorchive.web.util.CommonUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +30,7 @@ import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 
 /**
  * Model Class for file lists
+ * TODO refactor logic to service layer and away from model
  *
  * @author Skotsj on 29.12.2014.
  */
@@ -51,7 +53,7 @@ public class FileList
         }
         for (Path path : paths)
         {
-            parseDir(path, 0);
+            parsePath(path, 0);
         }
     }
 
@@ -83,13 +85,13 @@ public class FileList
         return files.stream().filter(file -> file.getEntryType() != entryType && file.getEntryType() != EntryType.DIR);
     }
 
-    private void parseDir(Path path, int depth)
+    private void parsePath(Path path, int depth)
     {
         if (Files.isDirectory(path))
         {
             List<Path> subDirs = FileUtils.listDir(path);
             files.add(new FileInfo(path, depth, subDirs.size()));
-            subDirs.forEach(p -> parseDir(p, depth + 1));
+            subDirs.forEach(p -> parsePath(p, depth + 1));
         } else
         {
             FileInfo newFile = new FileInfo(path, depth, 0);
@@ -113,7 +115,7 @@ public class FileList
         }
         List<FileHeader> fileHeaders = archive.getFileHeaders();
         files.addAll(fileHeaders.stream()
-                .map(fileHeader -> new FileInfo(fileHeader, fileInfo.getRelativePath(), fileInfo.getDepth() + 1))
+                .map(fileHeader -> new FileInfo(archive, fileHeader, fileInfo.getRelativePath(), fileInfo.getDepth() + 1))
                 .collect(Collectors.toList()));
     }
 
@@ -133,6 +135,7 @@ public class FileList
         private boolean hardIgnored = false;
 
         private Path path;
+        private Archive archive;
         private FileHeader fileHeader;
         private EntryType entryType;
         private String ext;
@@ -141,7 +144,7 @@ public class FileList
         {
             this.depth = depth;
             this.name = name;
-            this.ext = substringAfterLast(name, ".");
+            this.ext = substringAfterLast(name, ".").toLowerCase();
         }
 
         public FileInfo(final Path path, final int depth, int children)
@@ -151,7 +154,6 @@ public class FileList
             String fullPath = path.toAbsolutePath().toString();
             String prefix = Strings.commonPrefix(fullPath, root.toString() + File.separator);
             this.relativePath = fullPath.substring(prefix.length());
-            this.depth = depth;
             this.children = children;
             this.size = fileSizeWithHtmlColor(path);
             this.entryType = Files.isDirectory(path) ? EntryType.DIR : EntryType.FILE;
@@ -159,12 +161,12 @@ public class FileList
             generateHashes();
         }
 
-        public FileInfo(FileHeader fileHeader, String rarFile, int depth)
+        public FileInfo(Archive archive, FileHeader fileHeader, String rarFile, int depth)
         {
             this(fileHeader.getFileNameString(), depth);
+            this.archive = archive;
             this.fileHeader = fileHeader;
             this.relativePath = rarFile + RAR_SEPARATOR + fileHeader.getFileNameString();
-            this.depth = depth;
             this.children = 0;
             this.size = fileSizeWithHtmlColor(fileHeader.getUnpSize());
             this.entryType = EntryType.ARCHIVE_ENTRY;
@@ -263,8 +265,22 @@ public class FileList
             {
                 return icon(FOLDER_OPEN) + name;
             }
-            String ext = substringAfterLast(name, ".");
             return addIcon(ext, name);
+        }
+
+        public void extract(Path out)
+        {
+            if (entryType != EntryType.ARCHIVE_ENTRY)
+            {
+                throw new RuntimeException("not arch");
+            }
+            try (FileOutputStream os = new FileOutputStream(out.resolve(name).toFile()))
+            {
+                archive.extractFile(fileHeader, os);
+            } catch (RarException | IOException e)
+            {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

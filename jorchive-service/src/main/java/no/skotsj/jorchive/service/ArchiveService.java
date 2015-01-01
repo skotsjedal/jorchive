@@ -14,4 +14,6 @@ import java.util.List;
 public interface ArchiveService
 {
     List<Path> listCompleted();
+
+    Path getOutPath();
 }

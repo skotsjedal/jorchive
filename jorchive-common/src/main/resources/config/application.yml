@@ -2,3 +2,4 @@ jorchive:
   dir:
     completed: d:/t
     temp: d:/tmp
+    output: d:/h

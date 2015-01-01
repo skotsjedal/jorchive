@@ -21,6 +21,8 @@ import java.util.Map;
 /**
  * Default Controller
  *
+ * TODO fix rest replies
+ *
  * @author Skotsj on 26.12.2014.
  */
 @Controller
@@ -74,6 +76,15 @@ public class HomeController
     String filterAllRest(@PathVariable("filterType") String filterType)
     {
         filter(FilterType.valueOf(filterType));
+        return "ok";
+    }
+
+    @RequestMapping(value = "/extract/{id}", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    String extract(@PathVariable("id") String id)
+    {
+        fileList.get(id).extract(archiveService.getOutPath());
         return "ok";
     }
 
