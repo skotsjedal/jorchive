@@ -1,15 +1,16 @@
-package no.skotsj.jorchive.web.config;
+package no.skotsj.jorchive.web.config.initialize;
 
-import no.skotsj.jorchive.service.config.ServiceConfig;
+import no.skotsj.jorchive.web.config.MvcConfig;
+import no.skotsj.jorchive.web.config.RootConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 /**
- * Servlet Config
+ * Servlet Initializer
  * <p>
  * Created by Skotsj on 25.12.2014.
  */
 
-public class AppConfig extends AbstractAnnotationConfigDispatcherServletInitializer
+public class ServletInitializer extends AbstractAnnotationConfigDispatcherServletInitializer
 {
 
     @Override
@@ -21,7 +22,7 @@ public class AppConfig extends AbstractAnnotationConfigDispatcherServletInitiali
     @Override
     protected Class<?>[] getRootConfigClasses()
     {
-        return new Class[]{ServiceConfig.class};
+        return new Class[]{RootConfig.class};
     }
 
     @Override
