@@ -1,16 +1,23 @@
 package no.skotsj.jorchive.web.util;
 
+import com.google.common.collect.Maps;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.TreeMap;
 
 /**
+ * Helper methods for HTML styling
+ *
  * @author Skotsj on 29.12.2014.
  */
 public class StyleHelper
 {
 
-    public static final String WHITE = "#000000";
+    private static TreeMap<Integer, String> colors = Maps.newTreeMap();
+
+    public static final String BLACK = "#000000";
     public static final String DARK_GREEN = "#4C9900";
     public static final String ORANGE = "#FF8000";
     public static final String DARK_ORANGE = "#CC6600";
@@ -25,6 +32,17 @@ public class StyleHelper
     public static final String ARCHIVE = "glyphicon-compressed";
     public static final String BOOK = "glyphicon-book";
     public static final String PICTURE = "glyphicon-picture";
+
+    static
+    {
+        colors.put(0, BLACK);
+        colors.put(45, DARK_GREEN);
+        colors.put(95, ORANGE);
+        colors.put(195, DARK_ORANGE);
+        colors.put(495, BRIGHT_RED);
+        colors.put(950, RED);
+        colors.put(1950, DARK_RED);
+    }
 
     public static String fileSizeWithHtmlColor(long dataSize)
     {
@@ -44,33 +62,8 @@ public class StyleHelper
 
     private static String getColor(long dataSize)
     {
-        dataSize /= 1024 * 1024;
-
-        if (dataSize == 0)
-        {
-            return WHITE;
-        }
-        if (dataSize <= 45)
-        {
-            return DARK_GREEN;
-        }
-        if (dataSize <= 95)
-        {
-            return ORANGE;
-        }
-        if (dataSize <= 495)
-        {
-            return DARK_ORANGE;
-        }
-        if (dataSize <= 950)
-        {
-            return BRIGHT_RED;
-        }
-        if (dataSize <= 1950)
-        {
-            return RED;
-        }
-        return DARK_RED;
+        int mb = (int) (dataSize / (1024 * 1024));
+        return colors.floorEntry(mb).getValue();
     }
 
     public static String fileSizeWithHtmlColor(Path path)
