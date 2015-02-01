@@ -15,12 +15,9 @@
         <div class="col-md-6"></div>
         <div class="col-md-6 text-right">
             <div class="group-btn pull-right" role="group" aria-label="...">
-                <!--@thymesVar id="filters" type="java.util.Map"-->
+                <!--@thymesVar id="filters" type="java.util.Map<java.lang.String, java.lang.String>"-->
                 <button th:each="filter : ${filters}" type="button" class="btn btn-default filterBtn"
                         th:data="${filter.key}" th:text="${filter.value}">All</button>
-                <!--<button type="button" class="btn btn-default filterBtn" data-type="all">All</button>
-                <button type="button" class="btn btn-default filterBtn" data-type="file">Files</button>
-                <button type="button" class="btn btn-default filterBtn" data-type="archive">Archive Content</button>-->
             </div>
         </div>
     </div>

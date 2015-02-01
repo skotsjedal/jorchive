@@ -15,5 +15,9 @@ public interface ArchiveService
 {
     List<Path> listCompleted();
 
+    List<Path> listTemp();
+
+    List<Path> listDone();
+
     Path getOutPath();
 }

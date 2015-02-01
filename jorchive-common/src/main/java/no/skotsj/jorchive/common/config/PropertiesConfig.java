@@ -2,8 +2,6 @@ package no.skotsj.jorchive.common.config;
 
 import no.skotsj.jorchive.common.prop.DirectorySettings;
 import no.skotsj.jorchive.common.prop.SecuritySettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

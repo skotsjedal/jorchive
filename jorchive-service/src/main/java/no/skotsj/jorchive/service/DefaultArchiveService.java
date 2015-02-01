@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 /**
- * Service Class For Archiving
+ * Service Class for Archiving
  *
  * @author Skotsj on 28.12.2014.
  */
@@ -25,6 +25,20 @@ public class DefaultArchiveService implements ArchiveService
     public List<Path> listCompleted()
     {
         Path dir = Paths.get(directorySettings.getCompleted());
+        return FileUtils.listDir(dir);
+    }
+
+    @Override
+    public List<Path> listTemp()
+    {
+        Path dir = Paths.get(directorySettings.getTemp());
+        return FileUtils.listDir(dir);
+    }
+
+    @Override
+    public List<Path> listDone()
+    {
+        Path dir = Paths.get(directorySettings.getOutput());
         return FileUtils.listDir(dir);
     }
 
