@@ -1,8 +1,11 @@
 jorchive:
   dir:
-    completed:
+    download:
     temp:
-    output:
+    tv:
+    movie:
+    movieArchive:
+    anime:
   security:
     user:
     pwd:

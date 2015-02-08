@@ -25,30 +25,39 @@ public class DefaultArchiveService implements ArchiveService
     private DirectorySettings directorySettings;
 
     @Override
-    public List<Path> listCompleted()
+    public List<Path> listDownloaded()
     {
-        Path dir = Paths.get(directorySettings.getCompleted());
-        return FileUtils.listDir(dir);
+        return FileUtils.listDir(Paths.get(directorySettings.getDownload()));
     }
 
     @Override
     public List<Path> listTemp()
     {
-        Path dir = Paths.get(directorySettings.getTemp());
-        return FileUtils.listDir(dir);
+        return FileUtils.listDir(Paths.get(directorySettings.getTemp()));
     }
 
     @Override
-    public List<Path> listDone()
+    public List<Path> listTv()
     {
-        Path dir = Paths.get(directorySettings.getOutput());
-        return FileUtils.listDir(dir);
+        return FileUtils.listDir(Paths.get(directorySettings.getTv()));
     }
 
     @Override
-    public Path getOutPath()
+    public List<Path> listMovie()
     {
-        return Paths.get(directorySettings.getOutput());
+        return FileUtils.listDir(Paths.get(directorySettings.getMovie()));
+    }
+
+    @Override
+    public List<Path> listMovieArchive()
+    {
+        return FileUtils.listDir(Paths.get(directorySettings.getMovieArchive()));
+    }
+
+    @Override
+    public List<Path> listAnime()
+    {
+        return FileUtils.listDir(Paths.get(directorySettings.getAnime()));
     }
 
     @Override

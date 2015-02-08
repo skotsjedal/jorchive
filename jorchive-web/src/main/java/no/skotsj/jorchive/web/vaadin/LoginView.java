@@ -28,7 +28,10 @@ public class LoginView extends DefaultHorizontalLoginForm implements View
             authed = true;
             getUI().getNavigator().navigateTo(MainUi.MAINVIEW);
         }
-        Notification.show("Invalid usename/password");
+        else
+        {
+            Notification.show("Invalid usename/password");
+        }
     }
 
     @Override

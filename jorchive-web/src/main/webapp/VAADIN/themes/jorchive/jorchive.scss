@@ -1,0 +1,9 @@
+@import "../valo/valo.scss";
+
+@mixin jorchive {
+  @include valo;
+
+  .mainTitle {
+    font-size: 3em;
+  }
+}

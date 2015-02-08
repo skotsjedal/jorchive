@@ -13,18 +13,21 @@ import org.springframework.stereotype.Component;
 public class DirectorySettings
 {
 
-    private String completed;
+    private String download;
     private String temp;
-    private String output;
+    private String tv;
+    private String movie;
+    private String movieArchive;
+    private String anime;
 
-    public String getCompleted()
+    public String getDownload()
     {
-        return completed;
+        return download;
     }
 
-    public void setCompleted(String completed)
+    public void setDownload(String download)
     {
-        this.completed = completed;
+        this.download = download;
     }
 
     public String getTemp()
@@ -37,13 +40,43 @@ public class DirectorySettings
         this.temp = temp;
     }
 
-    public String getOutput()
+    public String getTv()
     {
-        return output;
+        return tv;
     }
 
-    public void setOutput(String output)
+    public void setTv(String tv)
     {
-        this.output = output;
+        this.tv = tv;
+    }
+
+    public String getMovie()
+    {
+        return movie;
+    }
+
+    public void setMovie(String movie)
+    {
+        this.movie = movie;
+    }
+
+    public String getMovieArchive()
+    {
+        return movieArchive;
+    }
+
+    public void setMovieArchive(String movieArchive)
+    {
+        this.movieArchive = movieArchive;
+    }
+
+    public String getAnime()
+    {
+        return anime;
+    }
+
+    public void setAnime(String anime)
+    {
+        this.anime = anime;
     }
 }

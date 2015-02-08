@@ -11,7 +11,7 @@ import org.vaadin.spring.annotation.VaadinUI;
 
 @VaadinUI
 @Title("Jorchive")
-@Theme("valo")
+@Theme("jorchive")
 @Widgetset("jorchive.AppWidgetSet")
 public class MainUi extends UI
 {

@@ -1,5 +1,6 @@
 package no.skotsj.jorchive.web.vaadin;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.IndexedContainer;
@@ -9,6 +10,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.*;
 import no.skotsj.jorchive.common.domain.EntryType;
+import no.skotsj.jorchive.common.domain.FolderType;
 import no.skotsj.jorchive.service.ArchiveService;
 import no.skotsj.jorchive.web.model.FileInfo;
 import no.skotsj.jorchive.web.model.FileList;
@@ -16,16 +18,19 @@ import no.skotsj.jorchive.web.vaadin.filter.EntryTypeFilter;
 import no.skotsj.jorchive.web.vaadin.filter.NameFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.navigator.annotation.VaadinView;
 
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Main view containt the application
  */
 @VaadinView(name = MainUi.MAINVIEW)
-public class MainView extends VerticalLayout implements View
+public class MainView extends VerticalLayout implements View, InitializingBean
 {
 
     private static Logger log = LoggerFactory.getLogger(MainView.class);
@@ -55,20 +60,84 @@ public class MainView extends VerticalLayout implements View
             // improve this
             getUI().getNavigator().navigateTo("");
         }
+    }
 
+    private void init()
+    {
         setMargin(true);
+
+        initTop();
+
         addComponent(files);
 
-        FileList fileList = new FileList(archiveService.listCompleted());
-        initFiles(fileList);
+        initFileList();
+        initFiles(archiveService.listDownloaded());
 
-        HorizontalLayout bottomLeftLayout = new HorizontalLayout();
-        addComponent(bottomLeftLayout);
-        bottomLeftLayout.addComponent(searchField);
+        setExpandRatio(files, 1);
+        files.setSizeFull();
+
+        initBottom();
+
+        initSearch();
+    }
+
+    private void initTop()
+    {
+        HorizontalLayout topLayout = new HorizontalLayout();
+        addComponent(topLayout);
+
+        Label title = new Label("Jorchive");
+        title.setStyleName("mainTitle");
+        title.setWidth("70%");
+        topLayout.addComponent(title);
+
+        List<FolderType> folders = Lists.newArrayList(FolderType.DOWN, FolderType.MOVIE, FolderType.TV, FolderType.TEMP);
+        OptionGroup optionGroup = new OptionGroup("Folders", folders);
+        optionGroup.select(FolderType.DOWN);
+        optionGroup.setStyleName("horizontal");
+        optionGroup.addStyleName("right");
+        optionGroup.addValueChangeListener(event -> changeList((FolderType) event.getProperty().getValue()));
+        topLayout.addComponent(optionGroup);
+    }
+
+    private void changeList(FolderType value)
+    {
+        switch (value)
+        {
+            case DOWN:
+                initFiles(archiveService.listDownloaded());
+                break;
+            case TEMP:
+                initFiles(archiveService.listTemp());
+                break;
+            case TV:
+                initFiles(archiveService.listTv());
+                break;
+            case MOVIE:
+                initFiles(archiveService.listMovie());
+                break;
+            case MOVIE_ARCHIVE:
+                initFiles(archiveService.listMovieArchive());
+                break;
+            case ANIME:
+                initFiles(archiveService.listAnime());
+                break;
+            default:
+                log.error("NYI");
+        }
+    }
+
+    private void initBottom()
+    {
+        HorizontalLayout bottomLayout = new HorizontalLayout();
+        addComponent(bottomLayout);
+
+        bottomLayout.setMargin(true);
+        bottomLayout.addComponent(searchField);
 
         HorizontalLayout filterLayout = new HorizontalLayout();
         filterLayout.setSpacing(true);
-        bottomLeftLayout.addComponent(filterLayout);
+        bottomLayout.addComponent(filterLayout);
         filterLayout.addComponent(new Label("Filter type:"));
         for (EntryType entryType : EntryType.values())
         {
@@ -79,19 +148,10 @@ public class MainView extends VerticalLayout implements View
 
         setSizeFull();
 
-        setExpandRatio(files, 1);
-        files.setSizeFull();
 
-        bottomLeftLayout.setWidth("90%");
-        searchField.setWidth("90%");
-        bottomLeftLayout.setExpandRatio(searchField, 1);
-
-        //infoLayout.setMargin(true);
-        //infoLayout.setVisible(false);
-
-        initFileList();
-        initSearch();
-
+        bottomLayout.setWidth("100%");
+        searchField.setWidth("95%");
+        bottomLayout.setExpandRatio(searchField, 1);
     }
 
     private Button.ClickListener clearEntryTypeFilter()
@@ -125,6 +185,12 @@ public class MainView extends VerticalLayout implements View
 
     private void initFileList()
     {
+        fileContainer = new IndexedContainer();
+        fileContainer.addContainerProperty(NAME, Label.class, "");
+        fileContainer.addContainerProperty(SIZE, Label.class, "");
+        fileContainer.addContainerProperty(TYPE, String.class, "");
+        fileContainer.addContainerProperty(ACTION, Button.class, null);
+
         files.setContainerDataSource(fileContainer);
         files.setSelectable(true);
         files.setImmediate(true);
@@ -140,16 +206,11 @@ public class MainView extends VerticalLayout implements View
     }
 
     @SuppressWarnings("unchecked")
-    private void initFiles(FileList fileList)
+    private void initFiles(List<Path> list)
     {
-        fileContainer = new IndexedContainer();
+        fileContainer.removeAllItems();
 
-        fileContainer.addContainerProperty(NAME, Label.class, "");
-        fileContainer.addContainerProperty(SIZE, Label.class, "");
-        fileContainer.addContainerProperty(TYPE, String.class, "");
-        fileContainer.addContainerProperty(ACTION, Button.class, null);
-
-        for (FileInfo f : fileList.getFiles())
+        for (FileInfo f : new FileList(list).getFiles())
         {
             if (f.isIgnored())
             {
@@ -179,5 +240,11 @@ public class MainView extends VerticalLayout implements View
             }
         }
 
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception
+    {
+        init();
     }
 }

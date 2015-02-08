@@ -45,7 +45,7 @@ public class HomeController
         Duration age = new Duration(cachedTime, DateTime.now());
         if (fileList == null || age.isLongerThan(new Duration(CACHE_DURATION * 1000L)))
         {
-            fileList = new FileList(archiveService.listCompleted());
+            fileList = new FileList(archiveService.listDownloaded());
             fileList.filter(filter);
             cachedTime = DateTime.now();
         }
@@ -80,7 +80,7 @@ public class HomeController
     @ResponseBody
     String extract(@PathVariable("id") String id)
     {
-        fileList.get(id).extract(archiveService.getOutPath());
+        //fileList.get(id).extract(archiveService.getOutPath());
         return "ok";
     }
 
