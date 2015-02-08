@@ -28,7 +28,7 @@ public class NameFilter implements Filter
     public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException
     {
         Label fileNameLabel = (Label) item.getItemProperty(NAME).getValue();
-        return fileNameLabel.getValue().contains(needle);
+        return fileNameLabel != null && fileNameLabel.getValue().contains(needle);
     }
 
     @Override
