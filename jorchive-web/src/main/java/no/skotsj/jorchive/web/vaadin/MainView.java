@@ -186,8 +186,8 @@ public class MainView extends VerticalLayout implements View, InitializingBean
     private void initFileList()
     {
         fileContainer = new IndexedContainer();
-        fileContainer.addContainerProperty(NAME, Label.class, "");
-        fileContainer.addContainerProperty(SIZE, Label.class, "");
+        fileContainer.addContainerProperty(NAME, Label.class, null);
+        fileContainer.addContainerProperty(SIZE, Label.class, null);
         fileContainer.addContainerProperty(TYPE, String.class, "");
         fileContainer.addContainerProperty(ACTION, Button.class, null);
 

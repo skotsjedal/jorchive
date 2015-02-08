@@ -137,8 +137,8 @@
                             <classpathScope>compile</classpathScope>
                             <mainClass>com.vaadin.sass.SassCompiler</mainClass>
                             <arguments>
-                                <argument>src/main/webapp/VAADIN/themes/jorchive/styles.scss</argument>
-                                <argument>src/main/webapp/VAADIN/themes/jorchive/styles.css</argument>
+                                <argument>jorchive-web/src/main/webapp/VAADIN/themes/jorchive/styles.scss</argument>
+                                <argument>jorchive-web/src/main/webapp/VAADIN/themes/jorchive/styles.css</argument>
                             </arguments>
                         </configuration>
                     </execution>

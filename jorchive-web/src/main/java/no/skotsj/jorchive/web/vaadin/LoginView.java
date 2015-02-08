@@ -30,7 +30,7 @@ public class LoginView extends DefaultHorizontalLoginForm implements View
         }
         else
         {
-            Notification.show("Invalid usename/password");
+            Notification.show("Invalid usename/password", Notification.Type.ERROR_MESSAGE);
         }
     }
 
