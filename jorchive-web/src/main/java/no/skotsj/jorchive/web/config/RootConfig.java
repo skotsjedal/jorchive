@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
  * @author Skotsj on 31.01.2015.
  */
 @Configuration
-@Import({ServiceConfig.class, SecurityConfig.class})
+@Import({ServiceConfig.class})
 public class RootConfig
 {
 }

@@ -20,4 +20,8 @@ public interface ArchiveService
     List<Path> listDone();
 
     Path getOutPath();
+
+    void extract(String id);
+
+    void copyFromInput(String id);
 }

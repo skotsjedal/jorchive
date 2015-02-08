@@ -5,5 +5,17 @@ package no.skotsj.jorchive.common.domain;
  */
 public enum EntryType
 {
-    DIR, FILE, ARCHIVE_ENTRY
+    DIR("Directory"), FILE("File"), ARCHIVE_ENTRY("Archived");
+
+    private final String value;
+
+    private EntryType(String value)
+    {
+        this.value = value;
+    }
+
+    public String getValue()
+    {
+        return value;
+    }
 }
