@@ -187,6 +187,7 @@ public class FileInfo
         }
         try (FileOutputStream os = new FileOutputStream(out.resolve(name).toFile()))
         {
+            // Will most likely have to reopen archive first
             archive.extractFile(fileHeader, os);
         } catch (RarException | IOException e)
         {

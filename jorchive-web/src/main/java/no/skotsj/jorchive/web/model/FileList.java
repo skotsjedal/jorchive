@@ -97,6 +97,7 @@ public class FileList
         try
         {
             archive = new Archive(fileInfo.getPath().toFile());
+            archive.close();
         } catch (RarException | IOException e)
         {
             throw new RuntimeException(e);

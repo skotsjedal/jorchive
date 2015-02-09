@@ -227,16 +227,16 @@ public class MainView extends VerticalLayout implements View, InitializingBean
             fileContainer.getContainerProperty(id, SIZE).setValue(size);
 
             fileContainer.getContainerProperty(id, TYPE).setValue(f.getEntryType().getValue());
-            switch (f.getEntryType())
+            if (f.getEntryType() == EntryType.ARCHIVE_ENTRY)
             {
-                case ARCHIVE_ENTRY:
-                    fileContainer.getContainerProperty(id, ACTION).setValue(
-                            new Button("Extract", event -> archiveService.extract(id)));
-                    break;
-                default:
-                    fileContainer.getContainerProperty(id, ACTION).setValue(
-                            new Button("Copy", event -> archiveService.copyFromInput(id)));
-                    break;
+                fileContainer.getContainerProperty(id, ACTION).setValue(
+                        new Button("Extract", event -> archiveService.extract(id)));
+
+            } else
+            {
+                fileContainer.getContainerProperty(id, ACTION).setValue(
+                        new Button("Copy", event -> archiveService.copyFromInput(id)));
+
             }
         }
 
