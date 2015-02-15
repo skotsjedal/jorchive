@@ -9,10 +9,13 @@ import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 /**
  * Default Controller
@@ -33,7 +36,6 @@ public class HomeController
     @Autowired
     private ArchiveService archiveService;
 
-    @ModelAttribute("fileList")
     public FileList fileList()
     {
         checkRefresh();
@@ -45,15 +47,16 @@ public class HomeController
         Duration age = new Duration(cachedTime, DateTime.now());
         if (fileList == null || age.isLongerThan(new Duration(CACHE_DURATION * 1000L)))
         {
-            fileList = new FileList(archiveService.listCompleted());
+            fileList = new FileList(archiveService.listDownloaded());
             fileList.filter(filter);
             cachedTime = DateTime.now();
         }
     }
 
-    @ModelAttribute("filters")
-    public Map<String, String> filters() {
-        Map<String, String> map = Maps.newLinkedHashMap();
+    @RequestMapping(value = "/filters", method = RequestMethod.GET)
+    @ResponseBody
+    public LinkedHashMap<String, String> filters() {
+        LinkedHashMap<String, String> map = Maps.newLinkedHashMap();
         map.put(FilterType.ALL.toString(), "All");
         map.put(FilterType.FILE.toString(), "Files");
         map.put(FilterType.ARCHIVE_ENTRY.toString(), "Archived Content");
@@ -63,7 +66,7 @@ public class HomeController
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String getUsersView()
     {
-        return "MainContent";
+        return "index";
     }
 
     @RequestMapping(value = "/filter/{filterType}", method = RequestMethod.GET)
@@ -80,7 +83,7 @@ public class HomeController
     @ResponseBody
     String extract(@PathVariable("id") String id)
     {
-        fileList.get(id).extract(archiveService.getOutPath());
+        archiveService.extract(id);
         return "ok";
     }
 

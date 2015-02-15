@@ -1,6 +1,5 @@
 package no.skotsj.jorchive.web.config;
 
-import nz.net.ultraq.thymeleaf.LayoutDialect;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -10,9 +9,7 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.thymeleaf.spring4.SpringTemplateEngine;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 /**
  * Mvc Config
@@ -26,43 +23,18 @@ public class MvcConfig extends WebMvcConfigurerAdapter
 {
 
     @Bean
-    public ThymeleafViewResolver viewResolver()
+    public InternalResourceViewResolver templateResolver()
     {
-        ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
-        viewResolver.setTemplateEngine(templateEngine());
-        return viewResolver;
-    }
-
-    @Bean
-    public SpringTemplateEngine templateEngine()
-    {
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setTemplateResolver(templateResolver());
-        templateEngine.addDialect(layoutDialect());
-        return templateEngine;
-    }
-
-    @Bean
-    public ServletContextTemplateResolver templateResolver()
-    {
-        ServletContextTemplateResolver resolver = new ServletContextTemplateResolver();
+        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
         resolver.setPrefix("/WEB-INF/views/");
         resolver.setSuffix(".html");
-        resolver.setTemplateMode("HTML5");
-        resolver.setCacheable(false);
         return resolver;
-    }
-
-    @Bean
-    public LayoutDialect layoutDialect()
-    {
-        return new LayoutDialect();
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry)
     {
-        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+        registry.addResourceHandler("/static/**").addResourceLocations("/static/");
     }
 
     @Override

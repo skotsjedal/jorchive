@@ -30,7 +30,8 @@ public class FileInfo
     private int depth;
     private int children;
     private String name;
-    private String size;
+    private long size;
+    private String htmlSize;
     private String context;
     private String id;
 
@@ -59,7 +60,8 @@ public class FileInfo
         String prefix = Strings.commonPrefix(fullPath, fileList.getRoot().toString() + File.separator);
         this.relativePath = fullPath.substring(prefix.length());
         this.children = children;
-        this.size = fileSizeWithHtmlColor(path);
+        this.size = findSize(path);
+        this.htmlSize = fileSizeWithHtmlColor(path);
         this.entryType = Files.isDirectory(path) ? EntryType.DIR : EntryType.FILE;
         this.hardIgnored = ext.matches(IGNORED_ARCHIVE_PATTERN);
         generateHashes();
@@ -72,7 +74,7 @@ public class FileInfo
         this.fileHeader = fileHeader;
         this.relativePath = rarFile + RAR_SEPARATOR + fileHeader.getFileNameString();
         this.children = 0;
-        this.size = fileSizeWithHtmlColor(fileHeader.getUnpSize());
+        this.htmlSize = fileSizeWithHtmlColor(fileHeader.getUnpSize());
         this.entryType = EntryType.ARCHIVE_ENTRY;
         generateHashes();
     }
@@ -101,6 +103,11 @@ public class FileInfo
 
     public String getName()
     {
+        return name;
+    }
+
+    public String getHtmlName()
+    {
         if (depth == 0)
         {
             return (isDir() ? icon(FOLDER_OPEN) : "") + name;
@@ -108,9 +115,9 @@ public class FileInfo
         return repeat("&nbsp;", depth * 4) + "\\- " + iconify(name);
     }
 
-    public String getSize()
+    public String getHtmlSize()
     {
-        return size;
+        return htmlSize;
     }
 
     public String getRelativePath()
@@ -180,6 +187,7 @@ public class FileInfo
         }
         try (FileOutputStream os = new FileOutputStream(out.resolve(name).toFile()))
         {
+            // Will most likely have to reopen archive first
             archive.extractFile(fileHeader, os);
         } catch (RarException | IOException e)
         {

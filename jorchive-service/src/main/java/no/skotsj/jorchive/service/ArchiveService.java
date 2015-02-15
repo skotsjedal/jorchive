@@ -13,11 +13,19 @@ import java.util.List;
 @Service
 public interface ArchiveService
 {
-    List<Path> listCompleted();
+    List<Path> listDownloaded();
 
     List<Path> listTemp();
 
-    List<Path> listDone();
+    List<Path> listTv();
 
-    Path getOutPath();
+    List<Path> listMovie();
+
+    List<Path> listMovieArchive();
+
+    List<Path> listAnime();
+
+    void extract(String id);
+
+    void copyFromInput(String id);
 }

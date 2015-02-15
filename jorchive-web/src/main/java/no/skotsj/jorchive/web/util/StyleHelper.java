@@ -72,9 +72,14 @@ public class StyleHelper
         {
             return "";
         }
+        return fileSizeWithHtmlColor(findSize(path));
+    }
+
+    public static long findSize(Path path)
+    {
         try
         {
-            return fileSizeWithHtmlColor(Files.size(path));
+            return Files.size(path);
         } catch (IOException e)
         {
             throw new RuntimeException(e);
