@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.TreeMap;
 
 /**
@@ -26,12 +27,12 @@ public class StyleHelper
     public static final String DARK_RED = "#CC0000";
 
 
-    public static final String FOLDER_OPEN = "glyphicon-folder-open";
-    public static final String FILM = "glyphicon-film";
-    public static final String MUSIC = "glyphicon-music";
-    public static final String ARCHIVE = "glyphicon-compressed";
-    public static final String BOOK = "glyphicon-book";
-    public static final String PICTURE = "glyphicon-picture";
+    public static final String FOLDER_OPEN = "fa-folder-open";
+    public static final String FILM = "fa-film";
+    public static final String MUSIC = "fa-music";
+    public static final String ARCHIVE = "fa-archive";
+    public static final String BOOK = "fa-book";
+    public static final String PICTURE = "fa-picture";
 
     static
     {
@@ -44,35 +45,19 @@ public class StyleHelper
         colors.put(1950, DARK_RED);
     }
 
-    public static String fileSizeWithHtmlColor(long dataSize)
-    {
-        String displaySize = humanReadableByteCount(dataSize);
-        displaySize = "<span style='color:" + getColor(dataSize) + "'>" + displaySize + "</span>";
-        return displaySize;
-    }
-
-    private static String humanReadableByteCount(long bytes)
+    public static String humanReadableByteCount(long bytes)
     {
         final int unit = 1024;
         if (bytes < unit) return bytes + " B";
         int exp = (int) (Math.log(bytes) / Math.log(unit));
         char pre = "KMGTPE".charAt(exp - 1);
-        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+        return String.format(Locale.ENGLISH, "%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
 
-    private static String getColor(long dataSize)
+    public static String colorForSize(long dataSize)
     {
         int mb = (int) (dataSize / (1024 * 1024));
         return colors.floorEntry(mb).getValue();
-    }
-
-    public static String fileSizeWithHtmlColor(Path path)
-    {
-        if (Files.isDirectory(path))
-        {
-            return "";
-        }
-        return fileSizeWithHtmlColor(findSize(path));
     }
 
     public static long findSize(Path path)
@@ -86,33 +71,28 @@ public class StyleHelper
         }
     }
 
-    public static String icon(String iconName)
-    {
-        return "<span class='glyphicon " + iconName + "'></span>&nbsp;&nbsp;";
-    }
-
-    public static String addIcon(String ext, String name)
+    public static String icon(String ext)
     {
         switch (ext)
         {
             case "mkv":
             case "avi":
             case "mp4":
-                return icon(FILM) + name;
+                return FILM;
             case "flac":
             case "mp3":
-                return icon(MUSIC) + name;
+                return MUSIC;
             case "rar":
-                return icon(ARCHIVE) + name;
+                return ARCHIVE;
             case "epub":
             case "mobi":
-                return icon(BOOK) + name;
+                return BOOK;
             case "jpg":
             case "jpeg":
             case "gif":
             case "png":
-                return icon(PICTURE) + name;
+                return PICTURE;
         }
-        return name;
+        return "";
     }
 }

@@ -1,5 +1,6 @@
 package no.skotsj.jorchive.web.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.junrar.Archive;
 import com.github.junrar.exception.RarException;
 import com.github.junrar.rarfile.FileHeader;
@@ -31,7 +32,8 @@ public class FileInfo
     private int children;
     private String name;
     private long size;
-    private String htmlSize;
+    private String sizeColor;
+    private String viewSize;
     private String context;
     private String id;
 
@@ -61,7 +63,8 @@ public class FileInfo
         this.relativePath = fullPath.substring(prefix.length());
         this.children = children;
         this.size = findSize(path);
-        this.htmlSize = fileSizeWithHtmlColor(path);
+        this.viewSize = humanReadableByteCount(size);
+        this.sizeColor = colorForSize(size);
         this.entryType = Files.isDirectory(path) ? EntryType.DIR : EntryType.FILE;
         this.hardIgnored = ext.matches(IGNORED_ARCHIVE_PATTERN);
         generateHashes();
@@ -74,7 +77,9 @@ public class FileInfo
         this.fileHeader = fileHeader;
         this.relativePath = rarFile + RAR_SEPARATOR + fileHeader.getFileNameString();
         this.children = 0;
-        this.htmlSize = fileSizeWithHtmlColor(fileHeader.getUnpSize());
+        this.size = fileHeader.getUnpSize();
+        this.viewSize = humanReadableByteCount(size);
+        this.sizeColor = colorForSize(size);
         this.entryType = EntryType.ARCHIVE_ENTRY;
         generateHashes();
     }
@@ -106,18 +111,19 @@ public class FileInfo
         return name;
     }
 
-    public String getHtmlName()
+    public long getSize()
     {
-        if (depth == 0)
-        {
-            return (isDir() ? icon(FOLDER_OPEN) : "") + name;
-        }
-        return repeat("&nbsp;", depth * 4) + "\\- " + iconify(name);
+        return size;
     }
 
-    public String getHtmlSize()
+    public String getViewSize()
     {
-        return htmlSize;
+        return viewSize;
+    }
+
+    public String getSizeColor()
+    {
+        return sizeColor;
     }
 
     public String getRelativePath()
@@ -130,7 +136,7 @@ public class FileInfo
         return children;
     }
 
-    public String getColor()
+    public String getRowColor()
     {
         return "#" + repeat(Integer.toHexString(255 - depth * 20), 3);
     }
@@ -145,11 +151,13 @@ public class FileInfo
         this.ignored = ignored;
     }
 
+    @JsonIgnore
     public Path getPath()
     {
         return path;
     }
 
+    @JsonIgnore
     public FileHeader getFileHeader()
     {
         return fileHeader;
@@ -170,13 +178,13 @@ public class FileInfo
         return entryType == EntryType.DIR;
     }
 
-    private String iconify(String name)
+    public String getIcon()
     {
         if (isDir())
         {
-            return icon(FOLDER_OPEN) + name;
+            return FOLDER_OPEN;
         }
-        return addIcon(ext, name);
+        return icon(ext);
     }
 
     public void extract(Path out)

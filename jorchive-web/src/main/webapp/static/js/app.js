@@ -1,6 +1,6 @@
 console.log("init app");
 
-var app = angular.module("jorchive", ['ngRoute']);
+var app = angular.module("jorchive", ['ngRoute', 'spring-security-csrf-token-interceptor']);
 
 app.config(['$routeProvider', function ($routeProvider) {
     $routeProvider.
@@ -12,7 +12,3 @@ app.config(['$routeProvider', function ($routeProvider) {
             redirectTo: '/main'
         })
 }]);
-
-app.controller("JorchiveController", function ($scope) {
-    $scope.title = "Wee";
-});

@@ -1,21 +1,18 @@
 package no.skotsj.jorchive.web.controller;
 
-import com.google.common.collect.Maps;
 import no.skotsj.jorchive.common.domain.FilterType;
 import no.skotsj.jorchive.service.ArchiveService;
+import no.skotsj.jorchive.web.model.FileInfo;
 import no.skotsj.jorchive.web.model.FileList;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * Default Controller
@@ -36,10 +33,12 @@ public class HomeController
     @Autowired
     private ArchiveService archiveService;
 
-    public FileList fileList()
+    @RequestMapping(value = "/files", method = RequestMethod.GET)
+    @ResponseBody
+    public List<FileInfo> fileList()
     {
         checkRefresh();
-        return fileList;
+        return fileList.getFiles();
     }
 
     private void checkRefresh()
@@ -55,41 +54,29 @@ public class HomeController
 
     @RequestMapping(value = "/filters", method = RequestMethod.GET)
     @ResponseBody
-    public LinkedHashMap<String, String> filters() {
-        LinkedHashMap<String, String> map = Maps.newLinkedHashMap();
-        map.put(FilterType.ALL.toString(), "All");
-        map.put(FilterType.FILE.toString(), "Files");
-        map.put(FilterType.ARCHIVE_ENTRY.toString(), "Archived Content");
-        return map;
+    public FilterType[] filters()
+    {
+        return FilterType.values();
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String getUsersView()
+    @RequestMapping(value = "/", method = {RequestMethod.GET, RequestMethod.HEAD})
+    public String index()
     {
         return "index";
     }
 
-    @RequestMapping(value = "/filter/{filterType}", method = RequestMethod.GET)
-    public
+    @RequestMapping(value = "/filter", method = RequestMethod.POST)
     @ResponseBody
-    String filterAllRest(@PathVariable("filterType") String filterType)
+    public void filterAllRest(@RequestBody String filterType)
     {
-        filter(FilterType.valueOf(filterType));
-        return "ok";
+        filter = FilterType.valueOf(filterType);
+        fileList.filter(filter);
     }
 
     @RequestMapping(value = "/extract/{id}", method = RequestMethod.GET)
-    public
     @ResponseBody
-    String extract(@PathVariable("id") String id)
+    public void extract(@PathVariable("id") String id)
     {
         archiveService.extract(id);
-        return "ok";
-    }
-
-    private void filter(FilterType filter)
-    {
-        this.filter = filter;
-        fileList.filter(filter);
     }
 }
