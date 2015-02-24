@@ -1,36 +1,39 @@
 var app = angular.module("jorchive");
 
-app.factory("constantService", function ($http) {
+app.factory("filterService", ['$http', function ($http) {
     var service = {};
 
     service.getFilters = function () {
         return $http.get('filters')
-            .then(function (reponse) {
-                return reponse.data;
-            });
-    };
-
-    return service;
-});
-
-app.factory("fileService", function ($http) {
-    var service = {};
-
-    service.getFiles = function () {
-        return $http.get('files')
-            .then(function (reponse) {
-                return reponse.data;
-            });
     };
 
     service.setFilter = function (type) {
         return $http.post('filter', type)
-            .then(function (reponse) {
-                return reponse.data;
-            }, function (response) {
-                console.log(response);
-            });
     };
 
     return service;
-});
+}]);
+
+app.factory("fileService", ['$http', function ($http) {
+    var service = {};
+
+    service.getFiles = function () {
+        return $http.get('files')
+    };
+
+    return service;
+}]);
+
+app.factory("navService", ['$http', function ($http) {
+    var service = {};
+
+    service.getCateggories = function () {
+        return $http.get('categories')
+    };
+
+    service.setCategory = function (categoryId) {
+        return $http.post('category', categoryId);
+    };
+
+    return service;
+}]);

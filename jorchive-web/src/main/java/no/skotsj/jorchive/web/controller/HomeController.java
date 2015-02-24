@@ -1,11 +1,15 @@
 package no.skotsj.jorchive.web.controller;
 
+import com.google.common.collect.Lists;
+import no.skotsj.jorchive.common.domain.Category;
 import no.skotsj.jorchive.common.domain.FilterType;
+import no.skotsj.jorchive.common.prop.DirectorySettings;
 import no.skotsj.jorchive.service.ArchiveService;
 import no.skotsj.jorchive.web.model.FileInfo;
 import no.skotsj.jorchive.web.model.FileList;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -21,7 +25,7 @@ import java.util.List;
  */
 @Controller
 @Scope(WebApplicationContext.SCOPE_SESSION)
-public class HomeController
+public class HomeController implements InitializingBean
 {
 
     private static final long CACHE_DURATION = 60L;
@@ -32,6 +36,25 @@ public class HomeController
 
     @Autowired
     private ArchiveService archiveService;
+    @Autowired
+    private DirectorySettings directorySettings;
+
+    private List<Category> categories;
+    private Category activeCategory;
+
+    @Override
+    public void afterPropertiesSet() throws Exception
+    {
+        categories = Lists.newArrayList(
+                new Category("fa-download", "Download", directorySettings.getDownload()),
+                new Category("fa-clock-o", "Temp", directorySettings.getTemp()),
+                new Category("fa-film", "Movies", directorySettings.getMovie()),
+                new Category("fa-database", "Movie Archive", directorySettings.getMovieArchive()),
+                new Category("fa-play-circle", "Tv", directorySettings.getTv()),
+                new Category("fa-star", "Anime", directorySettings.getAnime())
+        );
+        activeCategory = categories.get(0);
+    }
 
     @RequestMapping(value = "/files", method = RequestMethod.GET)
     @ResponseBody
@@ -46,10 +69,25 @@ public class HomeController
         Duration age = new Duration(cachedTime, DateTime.now());
         if (fileList == null || age.isLongerThan(new Duration(CACHE_DURATION * 1000L)))
         {
-            fileList = new FileList(archiveService.listDownloaded());
+            fileList = new FileList(activeCategory);
             fileList.filter(filter);
             cachedTime = DateTime.now();
         }
+    }
+
+    @RequestMapping(value = "/categories", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Category> categories()
+    {
+        return categories;
+    }
+
+    @RequestMapping(value = "/category", method = RequestMethod.POST)
+    @ResponseBody
+    public void category(@RequestBody String category)
+    {
+        activeCategory = categories.stream().filter(c -> c.getName().equals(category)).findFirst().get();
+        fileList = null;
     }
 
     @RequestMapping(value = "/filters", method = RequestMethod.GET)

@@ -1,26 +1,47 @@
 var app = angular.module("jorchive");
 
-app.controller("JorchiveController", function ($scope, constantService, fileService) {
+app.controller("JorchiveController", ['$scope', '$rootScope', 'filterService', 'fileService', function ($scope, $rootScope, filterService, fileService) {
     var init = function () {
-        constantService.getFilters().then(function (filters) {
-            $scope.filters = filters;
+        $scope.title = 'Initializing';
+        filterService.getFilters().success(function (resp) {
+            $scope.filters = resp;
         });
-        getFiles();
-
     };
+
+    $rootScope.$on('refreshFiles', function (event, categoryName) {
+        getFiles();
+        $scope.title = categoryName;
+    });
 
     var getFiles = function () {
-        fileService.getFiles().then(function (response) {
-            $scope.files = response;
+        fileService.getFiles().success(function (resp) {
+            $scope.files = resp;
         });
     };
 
-    $scope.title = app.name;
     $scope.filter = function (filterType) {
-        fileService.setFilter(filterType).then(function () {
+        filterService.setFilter(filterType).success(function () {
             getFiles();
         });
     };
 
     init();
-});
+}]);
+
+app.controller('NavController', ['$scope', '$rootScope', 'navService', function ($scope, $rootScope, navService) {
+    var init = function () {
+        $scope.title = app.name;
+        navService.getCateggories().success(function (categories) {
+            $scope.categories = categories;
+            $scope.setCategory($scope.categories[0].name);
+        });
+    };
+
+    $scope.setCategory = function (categoryName) {
+        navService.setCategory(categoryName).success(function () {
+            $rootScope.$broadcast('refreshFiles', categoryName);
+        });
+    };
+
+    init();
+}]);

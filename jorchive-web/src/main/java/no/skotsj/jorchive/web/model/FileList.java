@@ -4,6 +4,7 @@ import com.github.junrar.Archive;
 import com.github.junrar.exception.RarException;
 import com.github.junrar.rarfile.FileHeader;
 import com.google.common.collect.Lists;
+import no.skotsj.jorchive.common.domain.Category;
 import no.skotsj.jorchive.common.domain.EntryType;
 import no.skotsj.jorchive.common.domain.FilterType;
 import no.skotsj.jorchive.common.util.FileUtils;
@@ -30,11 +31,12 @@ public class FileList
 
     public List<FileInfo> getFiles()
     {
-        return files;
+        return files.stream().filter(f -> !f.isIgnored()).collect(Collectors.toList());
     }
 
-    public FileList(List<Path> paths)
+    public FileList(Category category)
     {
+        List<Path> paths = FileUtils.listDir(category.getPath());
         if (paths.size() > 0)
         {
             root = paths.get(0).getParent().toAbsolutePath();
@@ -70,7 +72,7 @@ public class FileList
 
     private Stream<FileInfo> findAllNot(EntryType entryType)
     {
-        return files.stream().filter(file -> file.getEntryType() != entryType && file.getEntryType() != EntryType.DIR);
+        return files.stream().filter(file -> file.getEntryType() != entryType);
     }
 
     private void parsePath(Path path, int depth)
