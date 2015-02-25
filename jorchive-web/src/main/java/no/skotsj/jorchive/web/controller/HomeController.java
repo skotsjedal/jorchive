@@ -1,10 +1,10 @@
 package no.skotsj.jorchive.web.controller;
 
-import com.google.common.collect.Lists;
-import no.skotsj.jorchive.common.domain.Category;
-import no.skotsj.jorchive.common.domain.FilterType;
-import no.skotsj.jorchive.common.prop.DirectorySettings;
+import no.skotsj.jorchive.web.model.Category;
+import no.skotsj.jorchive.web.model.CategoryType;
+import no.skotsj.jorchive.web.model.FilterType;
 import no.skotsj.jorchive.service.ArchiveService;
+import no.skotsj.jorchive.web.model.Categories;
 import no.skotsj.jorchive.web.model.FileInfo;
 import no.skotsj.jorchive.web.model.FileList;
 import org.joda.time.DateTime;
@@ -37,22 +37,12 @@ public class HomeController implements InitializingBean
     @Autowired
     private ArchiveService archiveService;
     @Autowired
-    private DirectorySettings directorySettings;
-
-    private List<Category> categories;
+    private Categories categories;
     private Category activeCategory;
 
     @Override
     public void afterPropertiesSet() throws Exception
     {
-        categories = Lists.newArrayList(
-                new Category("fa-download", "Download", directorySettings.getDownload()),
-                new Category("fa-clock-o", "Temp", directorySettings.getTemp()),
-                new Category("fa-film", "Movies", directorySettings.getMovie()),
-                new Category("fa-database", "Movie Archive", directorySettings.getMovieArchive()),
-                new Category("fa-play-circle", "Tv", directorySettings.getTv()),
-                new Category("fa-star", "Anime", directorySettings.getAnime())
-        );
         activeCategory = categories.get(0);
     }
 
@@ -75,37 +65,39 @@ public class HomeController implements InitializingBean
         }
     }
 
-    @RequestMapping(value = "/categories", method = RequestMethod.GET)
+    @RequestMapping(value = "/category", method = RequestMethod.GET)
     @ResponseBody
-    public List<Category> categories()
+    public List<Category> category()
     {
-        return categories;
+        return categories.getCategories();
     }
 
     @RequestMapping(value = "/category", method = RequestMethod.POST)
     @ResponseBody
     public void category(@RequestBody String category)
     {
-        activeCategory = categories.stream().filter(c -> c.getName().equals(category)).findFirst().get();
+        activeCategory = categories.getCategories().stream()
+                .filter(c -> c.getName().equals(category)).findFirst().get();
         fileList = null;
     }
 
-    @RequestMapping(value = "/filters", method = RequestMethod.GET)
+    @RequestMapping(value = "/categoryTypes", method = RequestMethod.GET)
+    @ResponseBody
+    public CategoryType[] categoryTypes()
+    {
+        return CategoryType.values();
+    }
+
+    @RequestMapping(value = "/filter", method = RequestMethod.GET)
     @ResponseBody
     public FilterType[] filters()
     {
         return FilterType.values();
     }
 
-    @RequestMapping(value = "/", method = {RequestMethod.GET, RequestMethod.HEAD})
-    public String index()
-    {
-        return "index";
-    }
-
     @RequestMapping(value = "/filter", method = RequestMethod.POST)
     @ResponseBody
-    public void filterAllRest(@RequestBody String filterType)
+    public void filter(@RequestBody String filterType)
     {
         filter = FilterType.valueOf(filterType);
         fileList.filter(filter);
@@ -116,5 +108,11 @@ public class HomeController implements InitializingBean
     public void extract(@PathVariable("id") String id)
     {
         archiveService.extract(id);
+    }
+
+    @RequestMapping(value = "/", method = {RequestMethod.GET, RequestMethod.HEAD})
+    public String index()
+    {
+        return "index";
     }
 }

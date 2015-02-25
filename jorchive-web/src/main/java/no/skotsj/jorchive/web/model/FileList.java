@@ -4,9 +4,6 @@ import com.github.junrar.Archive;
 import com.github.junrar.exception.RarException;
 import com.github.junrar.rarfile.FileHeader;
 import com.google.common.collect.Lists;
-import no.skotsj.jorchive.common.domain.Category;
-import no.skotsj.jorchive.common.domain.EntryType;
-import no.skotsj.jorchive.common.domain.FilterType;
 import no.skotsj.jorchive.common.util.FileUtils;
 
 import java.io.IOException;
@@ -26,6 +23,7 @@ import java.util.stream.Stream;
 public class FileList
 {
 
+    private final Category category;
     private Path root;
     private List<FileInfo> files = Lists.newArrayList();
 
@@ -36,6 +34,7 @@ public class FileList
 
     public FileList(Category category)
     {
+        this.category = category;
         List<Path> paths = FileUtils.listDir(category.getPath());
         if (paths.size() > 0)
         {
@@ -106,11 +105,16 @@ public class FileList
         }
         List<FileHeader> fileHeaders = archive.getFileHeaders();
         files.addAll(fileHeaders.stream()
-                .map(fileHeader -> new FileInfo(archive, fileHeader, fileInfo.getRelativePath(), fileInfo.getDepth() + 1))
+                .map(fileHeader -> new FileInfo(this, fileHeader, fileInfo.getRelativePath(), fileInfo.getDepth() + 1))
                 .collect(Collectors.toList()));
     }
 
     public Path getRoot() {
         return root;
+    }
+
+    public Category getCategory()
+    {
+        return category;
     }
 }

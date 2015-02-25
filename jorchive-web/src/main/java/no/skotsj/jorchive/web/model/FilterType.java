@@ -1,4 +1,4 @@
-package no.skotsj.jorchive.common.domain;
+package no.skotsj.jorchive.web.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

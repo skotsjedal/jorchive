@@ -4,7 +4,7 @@ app.factory("filterService", ['$http', function ($http) {
     var service = {};
 
     service.getFilters = function () {
-        return $http.get('filters')
+        return $http.get('filter')
     };
 
     service.setFilter = function (type) {
@@ -27,8 +27,8 @@ app.factory("fileService", ['$http', function ($http) {
 app.factory("navService", ['$http', function ($http) {
     var service = {};
 
-    service.getCateggories = function () {
-        return $http.get('categories')
+    service.getCategories = function () {
+        return $http.get('category')
     };
 
     service.setCategory = function (categoryId) {

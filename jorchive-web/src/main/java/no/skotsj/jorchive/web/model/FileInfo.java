@@ -6,15 +6,19 @@ import com.github.junrar.exception.RarException;
 import com.github.junrar.rarfile.FileHeader;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import no.skotsj.jorchive.common.domain.EntryType;
 import no.skotsj.jorchive.web.util.CommonUtils;
+import org.joda.time.LocalDateTime;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.repeat;
 import static no.skotsj.jorchive.web.util.CommonUtils.RAR_SEPARATOR;
@@ -22,8 +26,9 @@ import static no.skotsj.jorchive.web.util.StyleHelper.*;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 
 /**
-* Created by Skotsj on 01.02.2015.
-*/
+ * File Model
+ * Created by Skotsj on 01.02.2015.
+ */
 public class FileInfo
 {
     public static final String IGNORED_ARCHIVE_PATTERN = "r\\d\\d";
@@ -31,6 +36,7 @@ public class FileInfo
     private int depth;
     private int children;
     private String name;
+    private LocalDateTime date;
     private long size;
     private String sizeColor;
     private String viewSize;
@@ -46,6 +52,8 @@ public class FileInfo
     private FileHeader fileHeader;
     private EntryType entryType;
     private String ext;
+
+    private List<CategoryStatus> statuses;
 
     private FileInfo(String name, int depth)
     {
@@ -63,25 +71,43 @@ public class FileInfo
         this.relativePath = fullPath.substring(prefix.length());
         this.children = children;
         this.size = findSize(path);
+        FileTime fileTime;
+        try
+        {
+            fileTime = Files.readAttributes(path, BasicFileAttributes.class).creationTime();
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+        this.date = new LocalDateTime(fileTime.toMillis());
         this.viewSize = humanReadableByteCount(size);
         this.sizeColor = colorForSize(size);
         this.entryType = Files.isDirectory(path) ? EntryType.DIR : EntryType.FILE;
         this.hardIgnored = ext.matches(IGNORED_ARCHIVE_PATTERN);
         generateHashes();
+        generateStatuses(fileList.getCategory());
     }
 
-    public FileInfo(Archive archive, FileHeader fileHeader, String rarFile, int depth)
+    public FileInfo(FileList fileList, FileHeader fileHeader, String rarFile, int depth)
     {
         this(fileHeader.getFileNameString(), depth);
-        this.archive = archive;
         this.fileHeader = fileHeader;
         this.relativePath = rarFile + RAR_SEPARATOR + fileHeader.getFileNameString();
         this.children = 0;
         this.size = fileHeader.getUnpSize();
+        this.date = LocalDateTime.fromDateFields(fileHeader.getCTime());
         this.viewSize = humanReadableByteCount(size);
         this.sizeColor = colorForSize(size);
         this.entryType = EntryType.ARCHIVE_ENTRY;
         generateHashes();
+        generateStatuses(fileList.getCategory());
+    }
+
+    private void generateStatuses(Category category)
+    {
+        statuses = category.getToCategories().stream()
+                .map(c -> new CategoryStatus(c, c.getFiles().contains(name)))
+                .collect(Collectors.toList());
     }
 
     private void generateHashes()
@@ -114,6 +140,11 @@ public class FileInfo
     public long getSize()
     {
         return size;
+    }
+
+    public String getDate()
+    {
+        return date.toString("yyyy-MM-dd HH:mm:ss");
     }
 
     public String getViewSize()
@@ -185,6 +216,11 @@ public class FileInfo
             return FOLDER_OPEN;
         }
         return icon(ext);
+    }
+
+    public List<CategoryStatus> getStatuses()
+    {
+        return statuses;
     }
 
     public void extract(Path out)

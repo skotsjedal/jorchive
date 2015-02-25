@@ -8,9 +8,9 @@ app.controller("JorchiveController", ['$scope', '$rootScope', 'filterService', '
         });
     };
 
-    $rootScope.$on('refreshFiles', function (event, categoryName) {
+    $rootScope.$on('refreshFiles', function (event, category) {
         getFiles();
-        $scope.title = categoryName;
+        $scope.title = category.name;
     });
 
     var getFiles = function () {
@@ -31,15 +31,15 @@ app.controller("JorchiveController", ['$scope', '$rootScope', 'filterService', '
 app.controller('NavController', ['$scope', '$rootScope', 'navService', function ($scope, $rootScope, navService) {
     var init = function () {
         $scope.title = app.name;
-        navService.getCateggories().success(function (categories) {
-            $scope.categories = categories;
-            $scope.setCategory($scope.categories[0].name);
+        navService.getCategories().success(function (categories) {
+            $rootScope.categories = categories;
+            $scope.setCategory(categories[0]);
         });
     };
 
-    $scope.setCategory = function (categoryName) {
-        navService.setCategory(categoryName).success(function () {
-            $rootScope.$broadcast('refreshFiles', categoryName);
+    $scope.setCategory = function (category) {
+        navService.setCategory(category.name).success(function () {
+            $rootScope.$broadcast('refreshFiles', category);
         });
     };
 
