@@ -21,6 +21,10 @@ app.factory("fileService", ['$http', function ($http) {
         return $http.get('files')
     };
 
+    service.process = function(file, categoryName) {
+        return $http.post('process/' + file, categoryName);
+    };
+
     return service;
 }]);
 

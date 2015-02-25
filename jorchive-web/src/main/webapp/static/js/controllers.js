@@ -14,6 +14,7 @@ app.controller("JorchiveController", ['$scope', '$rootScope', 'filterService', '
     });
 
     var getFiles = function () {
+        $scope.files = [];
         fileService.getFiles().success(function (resp) {
             $scope.files = resp;
         });
@@ -22,6 +23,13 @@ app.controller("JorchiveController", ['$scope', '$rootScope', 'filterService', '
     $scope.filter = function (filterType) {
         filterService.setFilter(filterType).success(function () {
             getFiles();
+        });
+    };
+
+    $scope.process = function (event, file, categoryName) {
+        fileService.process(file, categoryName).success(function (resp) {
+            $(event.target).removeClass('label-info');
+            $(event.target).addClass('label-success');
         });
     };
 

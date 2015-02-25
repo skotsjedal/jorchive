@@ -25,17 +25,18 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="file in files"
-                    ng-style="{'background-color':file.rowColor}"
-                    id="{{ file.id }}">
+                    ng-style="{'background-color':file.rowColor}">
                     <td>{{ $index }}</td>
                     <td>
-                        <span class="label" style="margin: 1px"
-                              ng-class="status.contained ? 'label-success' : 'label-default'"
+                        <span class="label" style="margin: 1px; cursor: pointer;"
+                              ng-click="process($event, file.id, status.categoryName)"
+                              ng-class="status.contained ? 'label-info' : 'label-default'"
                               ng-repeat="status in file.statuses">
                             {{ status.categoryName }}
                         </span>
                     </td>
-                    <td>
+                    <td ng-style="{'color': file.entryType === 'ARCHIVE_ENTRY' ? '#1344ff' : ''}">
+                        {{ file.depth }} -
                         <i class="fa" ng-class="file.icon"></i>
                         {{ file.name }}
                     </td>

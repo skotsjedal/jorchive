@@ -103,11 +103,11 @@ public class HomeController implements InitializingBean
         fileList.filter(filter);
     }
 
-    @RequestMapping(value = "/extract/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/process/{id}", method = RequestMethod.POST)
     @ResponseBody
-    public void extract(@PathVariable("id") String id)
+    public void process(@PathVariable("id") String id, @RequestBody String categoryName)
     {
-        archiveService.extract(id);
+        archiveService.extract(id + " " + categoryName);
     }
 
     @RequestMapping(value = "/", method = {RequestMethod.GET, RequestMethod.HEAD})

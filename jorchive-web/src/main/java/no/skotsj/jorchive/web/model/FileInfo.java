@@ -95,7 +95,7 @@ public class FileInfo
         this.relativePath = rarFile + RAR_SEPARATOR + fileHeader.getFileNameString();
         this.children = 0;
         this.size = fileHeader.getUnpSize();
-        this.date = LocalDateTime.fromDateFields(fileHeader.getCTime());
+        this.date = LocalDateTime.fromDateFields(fileHeader.getMTime());
         this.viewSize = humanReadableByteCount(size);
         this.sizeColor = colorForSize(size);
         this.entryType = EntryType.ARCHIVE_ENTRY;
