@@ -2,3 +2,6 @@
 target
 *.iml
 *.priv
+
+node_modules
+src/main/webapp/static/lib/bower
