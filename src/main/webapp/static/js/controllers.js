@@ -27,9 +27,15 @@ app.controller("JorchiveController", ['$scope', '$rootScope', 'filterService', '
     };
 
     $scope.process = function (event, file, categoryName) {
+        var $target = $(event.target);
+        $target.removeClass('label-info');
+        $target.addClass('label-warning');
         fileService.process(file, categoryName).success(function (resp) {
-            $(event.target).removeClass('label-info');
-            $(event.target).addClass('label-success');
+            $target.removeClass('label-warning');
+            $target.addClass('label-success');
+        }).error(function (resp) {
+            $target.removeClass('label-warning');
+            $target.addClass('label-danger');
         });
     };
 

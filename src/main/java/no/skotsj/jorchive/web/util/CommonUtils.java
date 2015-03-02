@@ -15,11 +15,12 @@ import java.util.stream.Collectors;
 public class CommonUtils
 {
     public static final String RAR_SEPARATOR = "//";
+    public static final Pattern SEPARATOR_PATTERN = Pattern.compile("[" + RAR_SEPARATOR + Pattern.quote(File.separator) + "]");
 
     public static LinkedList<String> createHash(String relativePath)
     {
         final StringBuilder pathBuilder = new StringBuilder();
-        List<String> hashes = Splitter.on(Pattern.compile("[" + RAR_SEPARATOR + Pattern.quote(File.separator) + "]"))
+        List<String> hashes = Splitter.on(SEPARATOR_PATTERN)
                 .splitToList(relativePath).stream()
                 .map(s -> {
                     pathBuilder.append(s);

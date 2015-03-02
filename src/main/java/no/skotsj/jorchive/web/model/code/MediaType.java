@@ -5,5 +5,5 @@ package no.skotsj.jorchive.web.model.code;
  */
 public enum MediaType
 {
-    TV, MOVIE, ANIME
+    TV, MOVIE, ANIME, MIXED
 }

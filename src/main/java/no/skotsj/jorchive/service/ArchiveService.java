@@ -1,6 +1,9 @@
 package no.skotsj.jorchive.service;
 
+import no.skotsj.jorchive.web.model.FileInfo;
 import org.springframework.stereotype.Service;
+
+import java.nio.file.Path;
 
 /**
  * ArchiveService
@@ -10,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ArchiveService
 {
-    void extract(String id);
+    void copy(FileInfo fileInfo, Path path);
 
-    void copyFromInput(String id);
+    void extract(FileInfo fileInfo, Path path);
 }

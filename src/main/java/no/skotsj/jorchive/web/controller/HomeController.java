@@ -1,22 +1,27 @@
 package no.skotsj.jorchive.web.controller;
 
-import no.skotsj.jorchive.web.model.Category;
-import no.skotsj.jorchive.web.model.code.CategoryType;
-import no.skotsj.jorchive.web.model.code.FilterType;
 import no.skotsj.jorchive.service.ArchiveService;
 import no.skotsj.jorchive.web.model.Categories;
+import no.skotsj.jorchive.web.model.Category;
 import no.skotsj.jorchive.web.model.FileInfo;
 import no.skotsj.jorchive.web.model.FileList;
+import no.skotsj.jorchive.web.model.code.FilterType;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
+
+import static no.skotsj.jorchive.web.model.code.EntryType.ARCHIVE_ENTRY;
 
 /**
  * Default Controller
@@ -81,13 +86,6 @@ public class HomeController implements InitializingBean
         fileList = null;
     }
 
-    @RequestMapping(value = "/categoryTypes", method = RequestMethod.GET)
-    @ResponseBody
-    public CategoryType[] categoryTypes()
-    {
-        return CategoryType.values();
-    }
-
     @RequestMapping(value = "/filter", method = RequestMethod.GET)
     @ResponseBody
     public FilterType[] filters()
@@ -107,7 +105,17 @@ public class HomeController implements InitializingBean
     @ResponseBody
     public void process(@PathVariable("id") String id, @RequestBody String categoryName)
     {
-        archiveService.extract(id + " " + categoryName);
+        Category targetCategory = category().stream()
+                .filter(c -> c.getName().equals(categoryName)).findFirst().get();
+        FileInfo fileInfo = fileList.get(id);
+
+        if (fileInfo.getEntryType() == ARCHIVE_ENTRY)
+        {
+            archiveService.extract(fileInfo, targetCategory.getPath());
+        } else
+        {
+            archiveService.copy(fileInfo, targetCategory.getPath());
+        }
     }
 
     @RequestMapping(value = "/", method = {RequestMethod.GET, RequestMethod.HEAD})

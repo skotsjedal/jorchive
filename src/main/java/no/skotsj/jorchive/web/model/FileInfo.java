@@ -1,15 +1,12 @@
 package no.skotsj.jorchive.web.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.junrar.Archive;
 import com.github.junrar.exception.RarException;
 import com.github.junrar.rarfile.FileHeader;
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import no.skotsj.jorchive.web.model.code.EntryType;
 import no.skotsj.jorchive.web.model.code.MediaType;
 import no.skotsj.jorchive.web.util.Categorizer;
-import no.skotsj.jorchive.web.util.CommonUtils;
 import org.joda.time.LocalDateTime;
 
 import java.io.File;
@@ -19,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -53,7 +49,6 @@ public class FileInfo
     private long size;
     private String sizeColor;
     private String viewSize;
-    private String context;
     private String id;
 
     private String relativePath;
@@ -61,26 +56,27 @@ public class FileInfo
     private boolean hardIgnored = false;
 
     private Path path;
-    private Archive archive;
     private FileHeader fileHeader;
     private EntryType entryType;
     private String ext;
+    private Category category;
 
     private MediaType mediaType;
     private List<CategoryStatus> statuses;
 
-    private FileInfo(String name, int depth)
+    private FileInfo(FileList fileList, String name, int depth)
     {
         this.depth = depth;
         this.name = name;
         this.ext = substringAfterLast(name, ".").toLowerCase();
         this.hardIgnored = extPattern.matcher(ext).matches() || sample.matcher(name).matches();
         this.mediaType = Categorizer.categorize(name);
+        this.category = fileList.getCategory();
     }
 
     public FileInfo(FileList fileList, final Path path, final int depth, int children)
     {
-        this(path.getFileName().toString(), depth);
+        this(fileList, path.getFileName().toString(), depth);
         this.path = path;
         String fullPath = path.toAbsolutePath().toString();
         String prefix = Strings.commonPrefix(fullPath, fileList.getRoot().toString() + File.separator);
@@ -99,13 +95,13 @@ public class FileInfo
         this.viewSize = humanReadableByteCount(size);
         this.sizeColor = colorForSize(size);
         this.entryType = Files.isDirectory(path) ? EntryType.DIR : EntryType.FILE;
-        generateHashes();
-        generateStatuses(fileList.getCategory());
+        this.id = Integer.toHexString(this.relativePath.hashCode());
+        generateStatuses();
     }
 
     public FileInfo(FileList fileList, FileHeader fileHeader, String rarFile, int depth)
     {
-        this(fileHeader.getFileNameString(), depth);
+        this(fileList, fileHeader.getFileNameString(), depth);
         this.fileHeader = fileHeader;
         this.relativePath = rarFile + RAR_SEPARATOR + fileHeader.getFileNameString();
         this.children = 0;
@@ -114,22 +110,15 @@ public class FileInfo
         this.viewSize = humanReadableByteCount(size);
         this.sizeColor = colorForSize(size);
         this.entryType = EntryType.ARCHIVE_ENTRY;
-        generateHashes();
-        generateStatuses(fileList.getCategory());
+        this.id = Integer.toHexString(this.relativePath.hashCode());
+        generateStatuses();
     }
 
-    private void generateStatuses(Category category)
+    private void generateStatuses()
     {
-        statuses = category.getToCategories().stream()
+        statuses = category.getFeeds().stream().filter(c -> c.getMediaType() == mediaType)
                 .map(c -> new CategoryStatus(c, c.getFiles().contains(name)))
                 .collect(Collectors.toList());
-    }
-
-    private void generateHashes()
-    {
-        LinkedList<String> hashes = CommonUtils.createHash(relativePath);
-        this.id = hashes.pollLast();
-        this.context = Joiner.on(" ").join(hashes);
     }
 
     public int getDepth()
@@ -140,11 +129,6 @@ public class FileInfo
     public String getId()
     {
         return id;
-    }
-
-    public String getContext()
-    {
-        return context;
     }
 
     public String getName()
@@ -243,19 +227,8 @@ public class FileInfo
         return statuses;
     }
 
-    public void extract(Path out)
+    public Category getCategory()
     {
-        if (entryType != EntryType.ARCHIVE_ENTRY)
-        {
-            throw new RuntimeException("not arch");
-        }
-        try (FileOutputStream os = new FileOutputStream(out.resolve(name).toFile()))
-        {
-            // Will most likely have to reopen archive first
-            archive.extractFile(fileHeader, os);
-        } catch (RarException | IOException e)
-        {
-            throw new RuntimeException(e);
-        }
+        return category;
     }
 }

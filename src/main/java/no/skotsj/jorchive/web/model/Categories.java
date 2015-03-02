@@ -15,7 +15,6 @@ public final class Categories
 
     private Categories()
     {
-
     }
 
     public List<Category> getCategories()
