@@ -77,9 +77,9 @@ public class HomeController implements InitializingBean
         return categories.getCategories();
     }
 
-    @RequestMapping(value = "/category", method = RequestMethod.POST)
+    @RequestMapping(value = "/category/{id}", method = RequestMethod.POST)
     @ResponseBody
-    public void category(@RequestBody String category)
+    public void category(@PathVariable("id") String category)
     {
         activeCategory = categories.getCategories().stream()
                 .filter(c -> c.getName().equals(category)).findFirst().get();
@@ -93,9 +93,9 @@ public class HomeController implements InitializingBean
         return FilterType.values();
     }
 
-    @RequestMapping(value = "/filter", method = RequestMethod.POST)
+    @RequestMapping(value = "/filter/{id}", method = RequestMethod.POST)
     @ResponseBody
-    public void filter(@RequestBody String filterType)
+    public void filter(@PathVariable("id") String filterType)
     {
         filter = FilterType.valueOf(filterType);
         fileList.filter(filter);
