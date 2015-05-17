@@ -7,7 +7,7 @@ app.factory("fileService", ['$http', function ($http) {
         return $http.get('files')
     };
 
-    service.process = function(file, categoryName) {
+    service.process = function (file, categoryName) {
         return $http.post('process/' + file, categoryName);
     };
 
@@ -15,7 +15,7 @@ app.factory("fileService", ['$http', function ($http) {
 }]);
 
 app.factory('Filter', ['$resource', function ($resource) {
-  return $resource('/filter/:id', {id: '@id'}, {change: {method: 'POST'}});
+    return $resource('/filter/:id', {id: '@id'}, {change: {method: 'POST'}});
 }]);
 
 app.factory('Category', ['$resource', function ($resource) {

@@ -46,7 +46,7 @@
                     </div>
                 </li>
                 <li ng-repeat="category in categories">
-                    <a ng-click="setCategory(category)" style="cursor: pointer">
+                    <a ng-click="setCategory(category.name)" style="cursor: pointer">
                         <i class="fa" ng-class="category.faIcon"></i>
                         {{ category.name }}
                     </a>
