@@ -6,13 +6,18 @@ package no.skotsj.jorchive.web.model;
  */
 public class CategoryStatus
 {
+    public enum Status
+    {
+        NONE, CONTAINED, PROCESSING, PROCESSED, FAILED
+    }
+
     private String categoryName;
-    private boolean contained;
+    private Status status;
 
     public CategoryStatus(Category category, boolean contained)
     {
         this.categoryName = category.getName();
-        this.contained = contained;
+        this.status = contained ? Status.CONTAINED : Status.NONE;
     }
 
     public String getCategoryName()
@@ -20,9 +25,9 @@ public class CategoryStatus
         return categoryName;
     }
 
-    public boolean getContained()
+    public Status getStatus()
     {
-        return contained;
+        return status;
     }
 
 }

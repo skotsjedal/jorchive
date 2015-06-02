@@ -55,11 +55,10 @@ public class HomeController implements InitializingBean
     @ResponseBody
     public List<FileInfo> fileList()
     {
-        checkRefresh();
-        return fileList.getFiles();
+        return getFileList().getFiles();
     }
 
-    private void checkRefresh()
+    private FileList getFileList()
     {
         Duration age = new Duration(cachedTime, DateTime.now());
         if (fileList == null || age.isLongerThan(CACHE_DURATION))
@@ -68,6 +67,7 @@ public class HomeController implements InitializingBean
             fileList.filter(filter);
             cachedTime = DateTime.now();
         }
+        return fileList;
     }
 
     @RequestMapping(value = "/category", method = RequestMethod.GET)
@@ -98,7 +98,7 @@ public class HomeController implements InitializingBean
     public void filter(@PathVariable("id") String filterType)
     {
         filter = FilterType.valueOf(filterType);
-        fileList.filter(filter);
+        getFileList().filter(filter);
     }
 
     @RequestMapping(value = "/process/{id}", method = RequestMethod.POST)
@@ -107,7 +107,7 @@ public class HomeController implements InitializingBean
     {
         Category targetCategory = category().stream()
                 .filter(c -> c.getName().equals(categoryName)).findFirst().get();
-        FileInfo fileInfo = fileList.get(id);
+        FileInfo fileInfo = getFileList().get(id);
 
         if (fileInfo.getEntryType() == ARCHIVE_ENTRY)
         {

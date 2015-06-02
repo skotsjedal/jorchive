@@ -4,7 +4,7 @@ app.factory("fileService", ['$http', function ($http) {
     var service = {};
 
     service.getFiles = function () {
-        return $http.get('files')
+        return $http.get('files');
     };
 
     service.process = function (file, categoryName) {

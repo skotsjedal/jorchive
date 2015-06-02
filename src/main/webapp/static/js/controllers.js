@@ -25,17 +25,15 @@ app.controller("JorchiveController", ['$scope', '$rootScope', 'fileService', 'Fi
         getFiles();
     };
 
-    $scope.process = function (event, file, categoryName) {
-        var $target = $(event.target);
-        $target.removeClass('label-info');
-        $target.addClass('label-warning');
-        fileService.process(file, categoryName).success(function (resp) {
-            $target.removeClass('label-warning');
-            $target.addClass('label-success');
-        }).error(function (resp) {
-            $target.removeClass('label-warning');
-            $target.addClass('label-danger');
-        });
+    $scope.process = function (event, fileId, status) {
+        // TODO add currently processing list in the ui
+        status.status = 'PROCESSING';
+        fileService.process(fileId, status.categoryName)
+            .success(function (resp) {
+                status.status = 'PROCESSED';
+            }).error(function (resp) {
+                status.status = 'FAILED';
+            });
     };
 
     init();

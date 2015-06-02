@@ -30,8 +30,8 @@
                     <td>{{ $index }}</td>
                     <td>
                         <span class="label" style="margin: 1px; cursor: pointer;"
-                              ng-click="process($event, file.id, status.categoryName)"
-                              ng-class="status.contained ? 'label-info' : 'label-default'"
+                              ng-click="process($event, file.id, status)"
+                              file-status="status.status"
                               ng-repeat="status in file.statuses">
                             {{ status.categoryName }}
                         </span>
