@@ -1,6 +1,6 @@
 package no.skotsj.jorchive.web.controller;
 
-import no.skotsj.jorchive.service.ArchiveService;
+import no.skotsj.jorchive.service.FileService;
 import no.skotsj.jorchive.web.model.Categories;
 import no.skotsj.jorchive.web.model.Category;
 import no.skotsj.jorchive.web.model.FileInfo;
@@ -40,7 +40,7 @@ public class HomeController implements InitializingBean
     private DateTime cachedTime;
 
     @Autowired
-    private ArchiveService archiveService;
+    private FileService fileService;
     @Autowired
     private Categories categories;
     private Category activeCategory;
@@ -111,10 +111,10 @@ public class HomeController implements InitializingBean
 
         if (fileInfo.getEntryType() == ARCHIVE_ENTRY)
         {
-            archiveService.extract(fileInfo, targetCategory.getPath());
+            fileService.extract(fileInfo, targetCategory.getPath());
         } else
         {
-            archiveService.copy(fileInfo, targetCategory.getPath());
+            fileService.copy(fileInfo, targetCategory.getPath());
         }
     }
 
