@@ -8,16 +8,16 @@
 
     <!-- build:css static/css/third-party.css -->
     <!-- bower:css -->
-    <link rel="stylesheet" href="/static/lib/bower/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="/static/lib/bower/datatables/media/css/jquery.dataTables.css" />
-    <link rel="stylesheet" href="/static/lib/bower/font-awesome/css/font-awesome.css" />
-    <link rel="stylesheet" href="/static/lib/bower/metisMenu/dist/metisMenu.css" />
-    <link rel="stylesheet" href="/static/lib/bower/morrisjs/morris.css" />
-    <link rel="stylesheet" href="/static/lib/bower/datatables-responsive/css/dataTables.responsive.css" />
-    <link rel="stylesheet" href="/static/lib/bower/bootstrap-social/bootstrap-social.css" />
-    <link rel="stylesheet" href="/static/lib/bower/startbootstrap-sb-admin-2/dist/css/sb-admin-2.css" />
-    <link rel="stylesheet" href="/static/lib/bower/angular-grid/ng-grid.css" />
-    <link rel="stylesheet" href="/static/lib/bower/angular-loading-bar/build/loading-bar.css" />
+    <link rel="stylesheet" href="/static/lib/bower/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/lib/bower/datatables/media/css/jquery.dataTables.css"/>
+    <link rel="stylesheet" href="/static/lib/bower/font-awesome/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/static/lib/bower/metisMenu/dist/metisMenu.css"/>
+    <link rel="stylesheet" href="/static/lib/bower/morrisjs/morris.css"/>
+    <link rel="stylesheet" href="/static/lib/bower/datatables-responsive/css/dataTables.responsive.css"/>
+    <link rel="stylesheet" href="/static/lib/bower/bootstrap-social/bootstrap-social.css"/>
+    <link rel="stylesheet" href="/static/lib/bower/startbootstrap-sb-admin-2/dist/css/sb-admin-2.css"/>
+    <link rel="stylesheet" href="/static/lib/bower/angular-grid/ng-grid.css"/>
+    <link rel="stylesheet" href="/static/lib/bower/angular-loading-bar/build/loading-bar.css"/>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -53,10 +53,9 @@
                 </li>
                 <li>&nbsp;</li>
                 <li>&nbsp;</li>
-                <li>
+                <li ng-repeat="item in progressList">
                     <i class="fa" ng-class=""></i>
-                    <!-- TODO -->
-                    NYI - currently processing list
+                    {{ item.name }} - {{ item.progress | number:0 }}%
                 </li>
             </ul>
 

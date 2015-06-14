@@ -21,3 +21,7 @@ app.factory('Filter', ['$resource', function ($resource) {
 app.factory('Category', ['$resource', function ($resource) {
     return $resource('/category/:id', {id: '@id'}, {change: {method: 'POST'}});
 }]);
+
+app.factory('Progress', ['$resource', function ($resource) {
+    return $resource('/rest/status/:id', {id: '@id'});
+}]);

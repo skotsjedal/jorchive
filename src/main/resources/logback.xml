@@ -14,4 +14,5 @@
 
     <logger name="no.skotsj.jorchive" level="DEBUG"/>
     <logger name="org.springframework" level="DEBUG"/>
+    <logger name="org.apache.camel" level="INFO"/>
 </configuration>

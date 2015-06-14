@@ -1,16 +1,15 @@
 package no.skotsj.jorchive.web.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.junrar.exception.RarException;
 import com.github.junrar.rarfile.FileHeader;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import no.skotsj.jorchive.web.model.code.EntryType;
 import no.skotsj.jorchive.web.model.code.MediaType;
 import no.skotsj.jorchive.web.util.Categorizer;
 import org.joda.time.LocalDateTime;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,7 +42,7 @@ public class FileInfo
     private static final Pattern extPattern = Pattern.compile(IGNORE_PATTERN, Pattern.CASE_INSENSITIVE);
 
     private int depth;
-    private int children;
+    private List<FileInfo> children;
     private String name;
     private LocalDateTime date;
     private long size;
@@ -74,7 +73,7 @@ public class FileInfo
         this.category = fileList.getCategory();
     }
 
-    public FileInfo(FileList fileList, final Path path, final int depth, int children)
+    public FileInfo(FileList fileList, final Path path, final int depth, List<FileInfo> children)
     {
         this(fileList, path.getFileName().toString(), depth);
         this.path = path;
@@ -104,7 +103,7 @@ public class FileInfo
         this(fileList, fileHeader.getFileNameString(), depth);
         this.fileHeader = fileHeader;
         this.relativePath = rarFile + RAR_SEPARATOR + fileHeader.getFileNameString();
-        this.children = 0;
+        this.children = Lists.newArrayList();
         this.size = fileHeader.getUnpSize();
         this.date = LocalDateTime.fromDateFields(fileHeader.getMTime());
         this.viewSize = humanReadableByteCount(size);
@@ -161,7 +160,8 @@ public class FileInfo
         return relativePath;
     }
 
-    public int getChildren()
+    @JsonIgnore
+    public List<FileInfo> getChildren()
     {
         return children;
     }

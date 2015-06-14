@@ -4,23 +4,22 @@ import com.diffplug.common.base.Errors;
 import com.github.junrar.Archive;
 import com.github.junrar.exception.RarException;
 import com.github.junrar.rarfile.FileHeader;
-import no.skotsj.jorchive.common.util.FileUtils;
 import no.skotsj.jorchive.service.support.FileWatcher;
 import no.skotsj.jorchive.service.support.ReportingOutputStream;
 import no.skotsj.jorchive.web.model.FileInfo;
+import no.skotsj.jorchive.web.model.code.EntryType;
 import no.skotsj.jorchive.web.util.CommonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Service Class for Archiving
@@ -34,29 +33,32 @@ public class FileService
     @Autowired
     private FileWatcher fileWatcher;
 
+    @Async
     public void copy(FileInfo fileInfo, Path toPath)
     {
         log.info("copy {} to {}", fileInfo.getId(), toPath.toString());
-        deepCopy(fileInfo.getPath(), toPath);
+        deepCopy(fileInfo, toPath);
     }
 
-    private void deepCopy(Path fromPath, Path toPath)
+    private void deepCopy(FileInfo fileInfo, Path toPath)
     {
-        if (Files.isDirectory(fromPath))
+        if (fileInfo.getEntryType() == EntryType.DIR)
         {
-            FileUtils.listDir(fromPath).forEach(p -> deepCopy(p, toPath));
+            fileInfo.getChildren().forEach(p -> deepCopy(p, toPath));
+            return;
         }
-        Path targetFile = toPath.resolve(fromPath.getFileName().toString());
+        Path targetFile = toPath.resolve(fileInfo.getName());
         try (ReportingOutputStream os = new ReportingOutputStream(Files.newOutputStream(targetFile)))
         {
-            log.debug("Copying {}", fromPath.getFileName());
+            log.debug("Copying {}", fileInfo.getName());
 
-            performWatched(targetFile, os, Files.size(fromPath), Errors.rethrow().wrap(() -> {
+            FileWatcher.ProgressInstance pi = new FileWatcher.ProgressInstance(fileInfo.getId(), fileInfo.getName(), os, fileInfo.getSize());
+            performWatched(pi, Errors.rethrow().wrap(() -> {
                 if (Files.exists(targetFile))
                 {
                     Files.delete(targetFile);
                 }
-                Files.copy(fromPath, os);
+                Files.copy(fileInfo.getPath(), os);
             }));
         } catch (IOException e)
         {
@@ -64,6 +66,7 @@ public class FileService
         }
     }
 
+    @Async
     public void extract(FileInfo fileInfo, Path path)
     {
         log.info("extract {} to {}", fileInfo.getId(), path.toString());
@@ -79,28 +82,28 @@ public class FileService
             FileHeader fileHeader = archive.getFileHeaders().stream()
                     .filter(h -> h.getPositionInFile() == fileInfo.getFileHeader().getPositionInFile()).findFirst().get();
 
-            performWatched(targetFile, os, fileInfo.getSize(), Errors.rethrow().wrap(() -> {
-                archive.extractFile(fileHeader, os);
-            }));
+            FileWatcher.ProgressInstance pi = new FileWatcher.ProgressInstance(fileInfo.getId(), fileInfo.getName(), os, fileInfo.getSize());
+            performWatched(pi, Errors.rethrow().wrap(() -> archive.extractFile(fileHeader, os)));
         } catch (RarException | IOException e)
         {
             throw new RuntimeException(e);
         }
     }
 
-    private Lock performWatched(Path file, ReportingOutputStream stream, long size, Runnable action)
+    private void performWatched(FileWatcher.ProgressInstance pi, Runnable action)
     {
-        Lock lock = new ReentrantLock();
-        lock.lock();
-        fileWatcher.watch(file, stream, size, lock);
+        fileWatcher.watch(pi);
         try
         {
             action.run();
-        } finally
-        {
-            lock.unlock();
+        } catch (Exception e) {
+            pi.setFailure(e.getMessage());
+            log.error("Processing failed for file " + pi.getId(), e);
         }
-        return lock;
+        finally
+        {
+            pi.unlock();
+        }
     }
 
 }

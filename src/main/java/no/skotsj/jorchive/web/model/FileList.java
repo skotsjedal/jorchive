@@ -76,21 +76,24 @@ public class FileList
         return files.stream().filter(file -> file.getEntryType() != entryType);
     }
 
-    private void parsePath(Path path, int depth)
+    private FileInfo parsePath(Path path, int depth)
     {
         if (Files.isDirectory(path))
         {
-            List<Path> subDirs = FileUtils.listDir(path);
-            files.add(new FileInfo(this, path, depth, subDirs.size()));
-            subDirs.forEach(p -> parsePath(p, depth + 1));
+            List<Path> subElements = FileUtils.listDir(path);
+            List<FileInfo> subFilInfos = subElements.stream().map(p -> parsePath(p, depth + 1)).collect(Collectors.toList());
+            FileInfo fileInfo = new FileInfo(this, path, depth, subFilInfos);
+            files.add(fileInfo);
+            return fileInfo;
         } else
         {
-            FileInfo newFile = new FileInfo(this, path, depth, 0);
+            FileInfo newFile = new FileInfo(this, path, depth, Lists.newArrayList());
             files.add(newFile);
             if (newFile.getExt().equals("rar"))
             {
                 parseRar(newFile);
             }
+            return newFile;
         }
     }
 

@@ -12,7 +12,7 @@ import java.util.List;
  * @author Skotsj on 31.01.2015.
  */
 @Configuration
-@Import({ServiceConfig.class, SecurityConfig.class, CategoryConfig.class})
+@Import({ServiceConfig.class, SecurityConfig.class, CategoryConfig.class, CamelConfig.class})
 public class RootConfig
 {
     @Bean
