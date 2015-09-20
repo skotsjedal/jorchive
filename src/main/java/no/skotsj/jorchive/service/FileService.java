@@ -5,6 +5,7 @@ import com.github.junrar.Archive;
 import com.github.junrar.exception.RarException;
 import com.github.junrar.rarfile.FileHeader;
 import no.skotsj.jorchive.service.support.FileWatcher;
+import no.skotsj.jorchive.service.support.ProgressInstance;
 import no.skotsj.jorchive.service.support.ReportingOutputStream;
 import no.skotsj.jorchive.web.model.FileInfo;
 import no.skotsj.jorchive.web.model.code.EntryType;
@@ -52,7 +53,7 @@ public class FileService
         {
             log.debug("Copying {}", fileInfo.getName());
 
-            FileWatcher.ProgressInstance pi = new FileWatcher.ProgressInstance(fileInfo.getId(), fileInfo.getName(), os, fileInfo.getSize());
+            ProgressInstance pi = new ProgressInstance(fileInfo.getId(), fileInfo.getName(), os, fileInfo.getSize());
             performWatched(pi, Errors.rethrow().wrap(() -> {
                 if (Files.exists(targetFile))
                 {
@@ -82,7 +83,7 @@ public class FileService
             FileHeader fileHeader = archive.getFileHeaders().stream()
                     .filter(h -> h.getPositionInFile() == fileInfo.getFileHeader().getPositionInFile()).findFirst().get();
 
-            FileWatcher.ProgressInstance pi = new FileWatcher.ProgressInstance(fileInfo.getId(), fileInfo.getName(), os, fileInfo.getSize());
+            ProgressInstance pi = new ProgressInstance(fileInfo.getId(), fileInfo.getName(), os, fileInfo.getSize());
             performWatched(pi, Errors.rethrow().wrap(() -> archive.extractFile(fileHeader, os)));
         } catch (RarException | IOException e)
         {
@@ -90,7 +91,7 @@ public class FileService
         }
     }
 
-    private void performWatched(FileWatcher.ProgressInstance pi, Runnable action)
+    private void performWatched(ProgressInstance pi, Runnable action)
     {
         fileWatcher.watch(pi);
         try

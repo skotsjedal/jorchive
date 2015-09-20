@@ -11,11 +11,11 @@
     <packaging>war</packaging>
 
     <properties>
-        <spring.version>4.1.6.RELEASE</spring.version>
-        <spring.security.version>4.0.1.RELEASE</spring.security.version>
+        <spring.version>4.2.1.RELEASE</spring.version>
+        <spring.security.version>4.0.2.RELEASE</spring.security.version>
         <jackson-mapper.version>1.9.13</jackson-mapper.version>
         <jackson.version>2.5.1</jackson.version>
-        <camel.version>2.15.2</camel.version>
+        <camel.version>2.15.3</camel.version>
     </properties>
 
     <dependencies>

@@ -8,10 +8,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import static no.skotsj.jorchive.web.util.StyleHelper.humanReadableByteCount;
 
 /**
  * Utils for watching processing progress
@@ -31,10 +27,10 @@ public class FileWatcher
         instances.add(pi);
         try
         {
-            while (!pi.lock.tryLock(INTERVAL, TimeUnit.MILLISECONDS))
+            while (!pi.getLock().tryLock(INTERVAL, TimeUnit.MILLISECONDS))
             {
                 pi.tick();
-                log.trace(String.format(Locale.ENGLISH, "%s %s/%s %s %.2f%%", pi.name,
+                log.trace(String.format(Locale.ENGLISH, "%s %s/%s %s %.2f%%", pi.getName(),
                         pi.getCurrent(), pi.getSize(), pi.getSpeed(),
                         pi.getProgress()));
             }
@@ -44,104 +40,19 @@ public class FileWatcher
             throw new RuntimeException(e);
 
         }
-        pi.done = true;
-        log.info("{} done processing", pi.name);
+        pi.setDone();
+        log.info("{} done processing", pi.getName());
     }
 
     public ProgressInstance getInstance(String id)
     {
-        ProgressInstance progressInstance = instances.stream().filter(i -> i.id.equals(id)).findFirst()
+        ProgressInstance progressInstance = instances.stream().filter(i -> i.getId().equals(id)).findFirst()
                 .orElse(new ProgressInstance("", "N/A", null, 0));
-        if (progressInstance != null && progressInstance.done)
+        if (progressInstance != null && progressInstance.isDone())
         {
             instances.remove(progressInstance);
         }
         return progressInstance;
     }
 
-    public static class ProgressInstance
-    {
-        private String id;
-        private String name;
-        private ReportingOutputStream stream;
-        private long size;
-        private Lock lock;
-        private boolean done;
-
-        private long last;
-        private long speed;
-        private String failure;
-
-        public ProgressInstance(String id, String name, ReportingOutputStream stream, long size)
-        {
-            this.id = id;
-            this.name = name;
-            this.stream = stream;
-            this.size = size;
-            lock = new ReentrantLock();
-            lock.lock();
-        }
-
-        public String getSpeed()
-        {
-            return humanReadableByteCount(speed) + "/s";
-        }
-
-        public String getCurrent()
-        {
-            return humanReadableByteCount(current());
-        }
-
-        public double getProgress()
-        {
-            return (double) current() * 100 / size;
-        }
-
-        public String getSize()
-        {
-            return humanReadableByteCount(size);
-        }
-
-        private void tick()
-        {
-            long current = current();
-            speed = (current - last) / (INTERVAL / 1000);
-            last = current;
-        }
-
-        private long current()
-        {
-            return stream == null ? 0 : stream.getWritten();
-        }
-
-        public void unlock()
-        {
-            lock.unlock();
-        }
-
-        public void setFailure(String failure)
-        {
-            this.failure = failure;
-        }
-
-        public String getFailure()
-        {
-            return failure;
-        }
-
-        public String getId()
-        {
-            return id;
-        }
-
-        public boolean isDone()
-        {
-            return done;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-    }
 }

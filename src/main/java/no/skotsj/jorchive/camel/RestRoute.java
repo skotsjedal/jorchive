@@ -1,6 +1,7 @@
 package no.skotsj.jorchive.camel;
 
 import no.skotsj.jorchive.service.support.FileWatcher;
+import no.skotsj.jorchive.service.support.ProgressInstance;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class RestRoute extends SpringRouteBuilder
 
         rest("/status")
 
-                .get("/{id}").outType(FileWatcher.ProgressInstance.class).route()
+                .get("/{id}").outType(ProgressInstance.class).route()
                 .process(exchange -> {
                     String id = exchange.getIn().getHeader("id", String.class);
                     exchange.getIn().setBody(fileWatcher.getInstance(id));
