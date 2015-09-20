@@ -30,7 +30,7 @@ public class FileWatcher
             while (!pi.getLock().tryLock(INTERVAL, TimeUnit.MILLISECONDS))
             {
                 pi.tick();
-                log.trace(String.format(Locale.ENGLISH, "%s %s/%s %s %.2f%%", pi.getName(),
+                log.debug(String.format(Locale.ENGLISH, "%s %s/%s %s %.2f%%", pi.getName(),
                         pi.getCurrent(), pi.getSize(), pi.getSpeed(),
                         pi.getProgress()));
             }

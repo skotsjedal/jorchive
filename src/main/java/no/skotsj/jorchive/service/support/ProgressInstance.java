@@ -92,7 +92,7 @@ public class ProgressInstance
     void tick()
     {
         long current = current();
-        speed = (current - last) / (FileWatcher.INTERVAL / 1000);
+        speed = (long) ((current - last) / (((double) FileWatcher.INTERVAL) / 1000));
         last = current;
     }
 
