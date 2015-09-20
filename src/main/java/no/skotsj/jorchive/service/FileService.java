@@ -55,10 +55,6 @@ public class FileService
 
             ProgressInstance pi = new ProgressInstance(fileInfo.getId(), fileInfo.getName(), os, fileInfo.getSize());
             performWatched(pi, Errors.rethrow().wrap(() -> {
-                if (Files.exists(targetFile))
-                {
-                    Files.delete(targetFile);
-                }
                 Files.copy(fileInfo.getPath(), os);
             }));
         } catch (IOException e)
@@ -97,11 +93,11 @@ public class FileService
         try
         {
             action.run();
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             pi.setFailure(e.getMessage());
             log.error("Processing failed for file " + pi.getId(), e);
-        }
-        finally
+        } finally
         {
             pi.unlock();
         }
