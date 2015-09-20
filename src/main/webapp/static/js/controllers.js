@@ -26,12 +26,9 @@ app.controller("JorchiveController", ['$scope', '$rootScope', 'fileService', 'Fi
     };
 
     $scope.process = function (event, fileId, status) {
-        status.status = 'PROCESSING';
         fileService.process(fileId, status.categoryName)
             .success(function (resp) {
-                $rootScope.$broadcast('processing', fileId);
-                // TODO move these status updates as initial call is now async
-                status.status = 'PROCESSED';
+                $rootScope.$broadcast('processing', fileId, status);
             }).error(function (resp) {
                 status.status = 'FAILED';
             });
@@ -61,14 +58,17 @@ app.controller('NavController', ['$scope', '$rootScope', '$timeout', '$interval'
     $scope.progressList = progressList;
 
     var findProgress = function (id) {
+        var target = undefined;
         progressList.forEach(function (item) {
             if (item.id == id) {
-                return item;
+                target = item;
             }
-        })
+        });
+        return target;
     };
 
-    $rootScope.$on('processing', function (event, id) {
+    $rootScope.$on('processing', function (event, id, status) {
+        status.status = 'PROCESSING';
         progressList.push(Progress.get({id: id}));
         const refreshRate = 1000;
         const timeout = 5000;
@@ -81,12 +81,15 @@ app.controller('NavController', ['$scope', '$rootScope', '$timeout', '$interval'
                 progressList.push(response);
 
                 if (response.done) {
+                    status.status = 'PROCESSED';
                     $interval.cancel(intervalPromise);
                     $timeout(function () {
                         var index = progressList.indexOf(previous);
                         progressList.splice(index, 1);
                     }, timeout);
                 }
+            }, function () {
+                status.status = 'FAILED';
             });
         }, refreshRate);
     });
