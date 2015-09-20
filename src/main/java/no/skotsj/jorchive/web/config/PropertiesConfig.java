@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * Properties
@@ -43,7 +44,14 @@ public class PropertiesConfig
     public static YamlPropertiesFactoryBean yamlPropertiesFactoryBean()
     {
         YamlPropertiesFactoryBean bean = new YamlPropertiesFactoryBean();
-        bean.setResources(new ClassPathResource("config/application.yml"));
+        FileSystemResource fileSystemResource = new FileSystemResource("/data/jorchive/application.yml");
+        if (fileSystemResource.exists())
+        {
+            bean.setResources(fileSystemResource);
+        } else
+        {
+            bean.setResources(new ClassPathResource("config/application.yml"));
+        }
         return bean;
     }
 
