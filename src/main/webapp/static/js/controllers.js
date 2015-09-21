@@ -27,9 +27,9 @@ app.controller("JorchiveController", ['$scope', '$rootScope', 'fileService', 'Fi
 
     $scope.process = function (event, fileId, status) {
         fileService.process(fileId, status.categoryName)
-            .success(function (resp) {
+            .success(function () {
                 $rootScope.$broadcast('processing', fileId, status);
-            }).error(function (resp) {
+            }).error(function () {
                 status.status = 'FAILED';
             });
     };
@@ -54,38 +54,22 @@ app.controller('NavController', ['$scope', '$rootScope', '$timeout', '$interval'
         $rootScope.$broadcast('refreshFiles', category);
     };
 
-    var progressList = [];
+    var progressList = {};
     $scope.progressList = progressList;
-
-    var findProgress = function (id) {
-        var target = undefined;
-        progressList.forEach(function (item) {
-            if (item.id == id) {
-                target = item;
-            }
-        });
-        return target;
-    };
 
     $rootScope.$on('processing', function (event, id, status) {
         status.status = 'PROCESSING';
-        progressList.push(Progress.get({id: id}));
+        progressList[id] = Progress.get({id: id});
         const refreshRate = 1000;
         const timeout = 5000;
         var intervalPromise = $interval(function () {
             Progress.get({id: id}, function (response) {
-
-                var previous = findProgress(id);
-                var index = progressList.indexOf(previous);
-                progressList.splice(index, 1);
-                progressList.push(response);
-
+                progressList[id] = response;
                 if (response.done) {
                     status.status = 'PROCESSED';
                     $interval.cancel(intervalPromise);
                     $timeout(function () {
-                        var index = progressList.indexOf(previous);
-                        progressList.splice(index, 1);
+                        delete progressList[id];
                     }, timeout);
                 }
             }, function () {
