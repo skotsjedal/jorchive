@@ -9,7 +9,7 @@ import static no.skotsj.jorchive.web.util.StyleHelper.humanReadableByteCount;
  * Progress for a given file operation
  * Created by Skotsj on 9/20/2015.
  */
-public class ProgressInstance
+public class ProgressInstance implements Comparable
 {
     private String id;
     private String name;
@@ -51,7 +51,6 @@ public class ProgressInstance
     {
         return humanReadableByteCount(size);
     }
-
 
     private long current()
     {
@@ -105,4 +104,15 @@ public class ProgressInstance
     {
         return lock;
     }
+
+    @Override
+    public int compareTo(Object o)
+    {
+        if (!(o instanceof ProgressInstance))
+        {
+            return -1;
+        }
+        return name.compareTo(((ProgressInstance) o).getName());
+    }
+
 }
