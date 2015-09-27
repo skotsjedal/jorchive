@@ -18,8 +18,8 @@
                 <tr>
                     <td>#</td>
                     <td>Action</td>
-                    <td>Name</td>
                     <td>Size</td>
+                    <td>Name</td>
                     <td>Date</td>
                     <td>Type</td>
                 </tr>
@@ -36,12 +36,12 @@
                             {{ status.categoryName }}
                         </span>
                     </td>
+                    <td ng-style="{'color':file.sizeColor}">{{ file.viewSize }}</td>
                     <td ng-style="{'color': file.entryType === 'ARCHIVE_ENTRY' ? '#1344ff' : ''}">
                         {{ file.depth }} -
                         <i class="fa" ng-class="file.icon"></i>
                         {{ file.name }}
                     </td>
-                    <td ng-style="{'color':file.sizeColor}">{{ file.viewSize }}</td>
                     <td>{{ file.date }}</td>
                     <td>{{ file.mediaType }}</td>
                 </tr>

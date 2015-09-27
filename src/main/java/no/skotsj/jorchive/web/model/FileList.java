@@ -83,7 +83,13 @@ public class FileList
             List<Path> subElements = FileUtils.listDir(path);
             List<FileInfo> subFilInfos = subElements.stream().map(p -> parsePath(p, depth + 1)).collect(Collectors.toList());
             FileInfo fileInfo = new FileInfo(this, path, depth, subFilInfos);
-            files.add(fileInfo);
+            if (subFilInfos.size() > 0)
+            {
+                files.add(files.indexOf(subFilInfos.get(0)), fileInfo);
+            }
+            else {
+                files.add(fileInfo);
+            }
             return fileInfo;
         } else
         {
