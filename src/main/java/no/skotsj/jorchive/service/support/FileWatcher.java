@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class FileWatcher
 {
     public static final int INTERVAL = 500;
-    public static final double LOG_INTERVAL = .20;
+    public static final int LOG_INTERVAL = 10;
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -33,7 +33,7 @@ public class FileWatcher
             while (!pi.getLock().tryLock(INTERVAL, TimeUnit.MILLISECONDS))
             {
                 pi.tick();
-                if (progress < pi.getProgress() + LOG_INTERVAL)
+                if (progress + LOG_INTERVAL < pi.getProgress())
                 {
                     progress = pi.getProgress();
                     log.debug(String.format(Locale.ENGLISH, "%s %s/%s %s %.2f%%", pi.getName(),
