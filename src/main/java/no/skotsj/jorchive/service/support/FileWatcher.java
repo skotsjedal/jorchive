@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class FileWatcher
 {
     public static final int INTERVAL = 500;
+    public static final int LOG_INTERVAL = 20;
     private Logger log = LoggerFactory.getLogger(getClass());
 
     private Set<ProgressInstance> instances = new ConcurrentSkipListSet<>();
@@ -27,12 +28,17 @@ public class FileWatcher
         instances.add(pi);
         try
         {
+            double progress = 0;
             while (!pi.getLock().tryLock(INTERVAL, TimeUnit.MILLISECONDS))
             {
                 pi.tick();
-                log.debug(String.format(Locale.ENGLISH, "%s %s/%s %s %.2f%%", pi.getName(),
-                        pi.getCurrent(), pi.getSize(), pi.getSpeed(),
-                        pi.getProgress()));
+                if (progress < pi.getProgress() + LOG_INTERVAL)
+                {
+                    progress = pi.getProgress();
+                    log.debug(String.format(Locale.ENGLISH, "%s %s/%s %s %.2f%%", pi.getName(),
+                            pi.getCurrent(), pi.getSize(), pi.getSpeed(),
+                            pi.getProgress()));
+                }
             }
         } catch (Exception e)
         {
