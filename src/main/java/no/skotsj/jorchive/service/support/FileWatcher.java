@@ -17,7 +17,8 @@ import java.util.concurrent.TimeUnit;
 public class FileWatcher
 {
     public static final int INTERVAL = 500;
-    public static final int LOG_INTERVAL = 20;
+    public static final double LOG_INTERVAL = .20;
+
     private Logger log = LoggerFactory.getLogger(getClass());
 
     private Set<ProgressInstance> instances = new ConcurrentSkipListSet<>();
